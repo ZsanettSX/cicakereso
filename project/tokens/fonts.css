@@ -1,0 +1,4 @@
+/* CicaKereső webfonts — both families are the brand-specified fonts, loaded from Google Fonts.
+   Arima = display / headings (rounded, friendly). Alegreya = body (warm serif).
+   The hand-lettered "CicaKereső" wordmark is a logo asset, not a font — see assets/logo-circle.png. */
+@import url('https://fonts.googleapis.com/css2?family=Arima:wght@400;500;600;700&family=Alegreya:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap');

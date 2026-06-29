@@ -1,0 +1,77 @@
+/* ============================================================
+   CicaKereső — Color tokens
+   Warm, friendly cat-adoption brand. Cream base, sage greens,
+   camel + cocoa browns from the mascot. Never clinical.
+   ============================================================ */
+:root {
+  /* ---- Base palette (brand board, left→right) ---- */
+  --cream-50:  #faf1e4;  /* lightest page wash */
+  --cream-100: #f2ebdf;  /* warm cream surface */
+  --cream-200: #ece3d2;  /* cream border / divider */
+
+  --sage-100: #e4ead9;   /* tint */
+  --sage-200: #d6dfce;   /* soft sage surface */
+  --sage-300: #b7c9a8;   /* sage accent */
+  --sage-500: #8a9d77;   /* mid sage (derived) */
+  --forest-700: #47553c; /* deep forest — primary green */
+  --forest-800: #36422d; /* hover / darker */
+
+  --camel-300: #e3c6a3;  /* light tan tint (derived) */
+  --camel-500: #d4a373;  /* camel — warm accent */
+  --camel-600: #bd8a58;  /* camel hover (derived) */
+
+  --cocoa-700: #684230;  /* cocoa brown — wordmark, text */
+  --cocoa-800: #4f3122;  /* darkest cocoa (derived) */
+  --cocoa-300: #9b7256;  /* muted cocoa (derived) */
+
+  --white: #ffffff;
+
+  /* ---- Semantic surfaces ---- */
+  --color-bg:            var(--cream-50);
+  --surface-card:        var(--white);
+  --surface-cream:       var(--cream-100);
+  --surface-sage:        var(--sage-200);
+  --surface-sage-soft:   var(--sage-100);
+  --surface-forest:      var(--forest-700);
+  --surface-overlay:     rgba(79, 49, 34, 0.45); /* cocoa scrim */
+
+  /* ---- Semantic text ---- */
+  --text-strong:  var(--cocoa-800);   /* headings */
+  --text-body:    var(--cocoa-700);   /* paragraph */
+  --text-muted:   var(--cocoa-300);   /* captions, meta */
+  --text-on-forest: var(--cream-50);  /* text on green */
+  --text-on-camel:  var(--cocoa-800);
+  --text-link:    var(--forest-700);
+
+  /* ---- Borders & dividers ---- */
+  --border-soft:   var(--cream-200);
+  --border-sage:   var(--sage-300);
+  --border-strong: var(--camel-500);
+
+  /* ---- Brand / interactive ---- */
+  --color-primary:        var(--forest-700);
+  --color-primary-hover:  var(--forest-800);
+  --color-primary-text:   var(--cream-50);
+  --color-accent:         var(--camel-500);
+  --color-accent-hover:   var(--camel-600);
+  --color-accent-text:    var(--cocoa-800);
+  --focus-ring:           var(--sage-500);
+
+  /* ---- Status (warm-tuned, not clinical) ---- */
+  --success:      #6b8c5a;   /* sage-leaning green */
+  --success-bg:   #e4ead9;
+  --warning:      #c98a3c;   /* amber-camel */
+  --warning-bg:   #f6e7cf;
+  --danger:       #b5654b;   /* terracotta */
+  --danger-bg:    #f3ddd3;
+  --info:         #6f8aa0;   /* dusty blue */
+  --info-bg:      #e1e9ee;
+
+  /* ---- Cat-attribute swatches (used on cards/filters) ---- */
+  --cat-orange: #d99a5b;
+  --cat-cream:  #ecddc4;
+  --cat-grey:   #9aa0a4;
+  --cat-black:  #3c3a39;
+  --cat-white:  #f4f1ec;
+  --cat-tortie: #8a6a4f;
+}

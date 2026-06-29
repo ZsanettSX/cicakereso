@@ -1,0 +1,59 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Core — Buttons, Tags, Badges, Avatar" subtitle="Pill buttons, attribute tags, status badges, avatars" -->
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../../styles.css" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--cream-50); }
+  .row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+  .row:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { Button, Tag, Badge, Avatar } = window.CicaKeresDesignSystem_1a6097;
+const paw = <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="11" r="2.1"/><circle cx="11" cy="7.5" r="2.1"/><circle cx="16.5" cy="8.5" r="2.1"/><circle cx="19" cy="13" r="2"/><path d="M12.5 12.5c2.6 0 4.6 2 4.6 3.8 0 1.6-1.4 2.2-3 2.2-.9 0-1.2-.3-1.9-.3s-1 .3-1.9.3c-1.6 0-3-.6-3-2.2 0-1.8 2-3.8 4.2-3.8z"/></svg>;
+function App() {
+  return (
+    <div>
+      <div className="row">
+        <Button variant="primary" iconLeft={paw}>Cicák böngészése</Button>
+        <Button variant="accent">Örökbe fogadom</Button>
+        <Button variant="secondary">Részletek</Button>
+        <Button variant="ghost">Mégse</Button>
+        <Button variant="primary" disabled>Nem elérhető</Button>
+      </div>
+      <div className="row">
+        <Button variant="primary" size="sm">Kicsi</Button>
+        <Button variant="primary" size="md">Közepes</Button>
+        <Button variant="primary" size="lg">Nagy</Button>
+      </div>
+      <div className="row">
+        <Tag tone="sage">2 éves</Tag>
+        <Tag tone="neutral">nőstény</Tag>
+        <Tag dot="var(--cat-orange)">Vörös cirmos</Tag>
+        <Tag tone="camel">Európai rövidszőrű</Tag>
+        <Tag tone="forest">Budapest</Tag>
+        <Tag tone="cocoa">Oltott</Tag>
+      </div>
+      <div className="row">
+        <Badge status="available">Örökbe fogadható</Badge>
+        <Badge status="reserved">Foglalt</Badge>
+        <Badge status="urgent">Sürgős</Badge>
+        <Badge status="info">Új</Badge>
+        <Avatar name="Mancs Menhely" size={40} ring />
+        <Avatar name="Cica Ház" size={40} />
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
