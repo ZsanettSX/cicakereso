@@ -90,14 +90,17 @@ async function CatListContent({ searchParams }: { searchParams: SearchParams }) 
         <CatGrid cats={cards} cols={3} emptyActionHref="/cicak" emptyActionLabel="Szűrők törlése" />
       </div>
 
-      <style>{`@media(max-width:900px){.ck-browse-layout{grid-template-columns:1fr!important;}}`}</style>
+      <style>{`
+        @media(max-width:900px){.ck-browse-layout{grid-template-columns:1fr!important;}}
+        @media(max-width:480px){.ck-cicak-page{padding-left:10px!important;padding-right:10px!important;}}
+      `}</style>
     </div>
   )
 }
 
 export default async function CicakPage({ searchParams }: { searchParams: SearchParams }) {
   return (
-    <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '40px 28px 64px' }}>
+    <div className="ck-cicak-page" style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '40px 28px 64px' }}>
       <Suspense fallback={<div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Betöltés...</div>}>
         <CatListContent searchParams={searchParams} />
       </Suspense>

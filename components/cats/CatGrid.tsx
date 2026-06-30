@@ -74,10 +74,10 @@ export default function CatGrid({
           .ck-cat-grid { grid-template-columns: repeat(3, 1fr) !important; }
         }
         @media (max-width: 768px) {
-          .ck-cat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .ck-cat-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
         }
         @media (max-width: 480px) {
-          .ck-cat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .ck-cat-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
         }
       `}</style>
     </>

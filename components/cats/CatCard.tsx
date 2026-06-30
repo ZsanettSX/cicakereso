@@ -48,7 +48,7 @@ export default function CatCard({ cat }: { cat: CatCardData }) {
     >
       <Link href={`/cicak/${cat.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
         {/* Photo */}
-        <div style={{ position: 'relative', aspectRatio: '4/3', background: 'var(--cream-100)', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', aspectRatio: '1/1', background: 'var(--cream-100)', overflow: 'hidden' }}>
           {photo ? (
             <img
               src={photo}
