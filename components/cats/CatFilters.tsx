@@ -212,13 +212,17 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
             boxSizing: 'border-box',
           }}
         />
-        <div className="ck-county-list" style={{ maxHeight: 200, overflowY: 'scroll', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {HUNGARIAN_COUNTIES.filter(c => c.toLowerCase().includes(megyeSearch.toLowerCase())).map((c) => (
-            <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--cocoa-700)', padding: '3px 2px' }}>
-              <input type="checkbox" checked={megye.includes(c)} onChange={() => toggleMegye(c)} style={{ accentColor: 'var(--forest-700)', width: 15, height: 15, flexShrink: 0 }} />
-              {c}
-            </label>
-          ))}
+        <div style={{ position: 'relative' }}>
+          <div className="ck-county-list" style={{ maxHeight: 200, overflowY: 'scroll', display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {HUNGARIAN_COUNTIES.filter(c => c.toLowerCase().includes(megyeSearch.toLowerCase())).map((c) => (
+              <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--cocoa-700)', padding: '3px 2px' }}>
+                <input type="checkbox" checked={megye.includes(c)} onChange={() => toggleMegye(c)} style={{ accentColor: 'var(--forest-700)', width: 15, height: 15, flexShrink: 0 }} />
+                {c}
+              </label>
+            ))}
+          </div>
+          {/* Gradient fade to hint scrollability */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 32, background: 'linear-gradient(to bottom, transparent, var(--white))', pointerEvents: 'none', borderRadius: '0 0 4px 4px' }} />
         </div>
       </div>
 
