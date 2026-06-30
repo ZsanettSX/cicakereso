@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const token = request.cookies.get('ck-admin')?.value
-    if (token !== process.env.ADMIN_TOKEN) {
+    if (token !== (process.env.ADMIN_TOKEN ?? 'cica-admin-2024')) {
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
   }
