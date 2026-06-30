@@ -78,17 +78,10 @@ async function CatListContent({ searchParams }: { searchParams: SearchParams }) 
       </Suspense>
 
       <div>
-        <div style={{ marginBottom: 24 }}>
-          <p className="ck-eyebrow" style={{ marginBottom: 6 }}>Örökbefogadható cicák</p>
-          <h1 style={{ margin: '0 0 8px', fontSize: 'var(--text-2xl)' }}>Örökbefogadható cicák Magyarországon</h1>
-          <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)', margin: '0 0 16px' }}>
-            Találd meg a doromboló szőrmók lelkitársadat – menhelyi cicák, akik új otthont keresnek
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
-              <strong style={{ color: 'var(--forest-700)', fontWeight: 700 }}>{cards.length}</strong> cica elérhető
-            </span>
-          </div>
+        <div style={{ marginBottom: 20 }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
+            <strong style={{ color: 'var(--forest-700)', fontWeight: 700 }}>{cards.length}</strong> cica elérhető
+          </span>
         </div>
         <CatGrid cats={cards} cols={3} emptyActionHref="/cicak" emptyActionLabel="Szűrők törlése" />
       </div>

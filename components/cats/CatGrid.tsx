@@ -77,7 +77,7 @@ export default function CatGrid({
           .ck-cat-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
         @media (max-width: 480px) {
-          .ck-cat-grid { grid-template-columns: 1fr !important; }
+          .ck-cat-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
       `}</style>
     </>
