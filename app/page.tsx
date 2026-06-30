@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { parseTraits } from '@/lib/utils'
 import { shuffle } from '@/lib/utils'
 import CatCarousel from '@/components/cats/CatCarousel'
+import CatRowCarousel from '@/components/cats/CatRowCarousel'
 import type { CatCardData } from '@/components/cats/CatCard'
 
 function toCatCard(cat: any): CatCardData {
@@ -103,7 +104,7 @@ export default async function HomePage() {
               Összes kölyök <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
           </div>
-          <CatCarousel cats={kolykoks} />
+          <CatRowCarousel cats={kolykoks} />
         </section>
       )}
 
@@ -119,7 +120,7 @@ export default async function HomePage() {
               Összes idős <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
           </div>
-          <CatCarousel cats={idosek} />
+          <CatRowCarousel cats={idosek} />
         </section>
       )}
 
