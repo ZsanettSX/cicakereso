@@ -1,0 +1,246 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { prisma } from './db'
+import { slugify, ageGroupFromMonths } from './utils'
+
+async function savePhotos(formData: FormData): Promise<string[]> {
+  const photoFiles = formData.getAll('photos') as File[]
+  const photoPaths: string[] = []
+  const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+  await fs.mkdir(uploadDir, { recursive: true })
+  for (const file of photoFiles) {
+    if (file && typeof file === 'object' && file.size > 0) {
+      const bytes = await file.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+      const filename = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_')}`
+      await fs.writeFile(path.join(uploadDir, filename), buffer)
+      photoPaths.push(`/uploads/${filename}`)
+    }
+  }
+  return photoPaths
+}
+
+function parseTraitsInput(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+}
+
+export async function createCat(formData: FormData): Promise<void> {
+  const name = String(formData.get('name') ?? '').trim()
+  const shelterId = String(formData.get('shelterId') ?? '')
+  const sex = String(formData.get('sex') ?? 'hím')
+  const ageText = String(formData.get('ageText') ?? '').trim() || null
+  const ageMonthsRaw = String(formData.get('ageMonths') ?? '').trim()
+  const ageMonths = ageMonthsRaw ? parseInt(ageMonthsRaw, 10) : null
+  const breed = String(formData.get('breed') ?? '').trim() || null
+  const breedType = String(formData.get('breedType') ?? 'keverék')
+  const color = String(formData.get('color') ?? '').trim() || null
+  const colorCategory = String(formData.get('colorCategory') ?? '').trim() || null
+  const coatCss = String(formData.get('coatCss') ?? '').trim() || null
+  const isNeutered = formData.get('isNeutered') === 'on'
+  const isVaccinated = formData.get('isVaccinated') === 'on'
+  const isChipped = formData.get('isChipped') === 'on'
+  const traits = parseTraitsInput(String(formData.get('traits') ?? ''))
+  const description = String(formData.get('description') ?? '').trim() || null
+  const status = String(formData.get('status') ?? 'available')
+
+  const ageGroup = ageMonths != null ? ageGroupFromMonths(ageMonths) : null
+  const photoPaths = await savePhotos(formData)
+  const slug = `${slugify(name)}-${Math.random().toString(36).slice(2, 7)}`
+
+  await prisma.cat.create({
+    data: {
+      slug,
+      name,
+      photos: JSON.stringify(photoPaths),
+      ageMonths,
+      ageText,
+      ageGroup,
+      breed,
+      breedType,
+      color,
+      colorCategory,
+      coatCss,
+      sex,
+      isNeutered,
+      isVaccinated,
+      isChipped,
+      traits: JSON.stringify(traits),
+      description,
+      shelterId,
+      status,
+    },
+  })
+
+  revalidatePath('/cicak')
+  revalidatePath('/')
+  revalidatePath('/admin/cicak')
+  redirect('/admin/cicak')
+}
+
+export async function updateCat(id: string, formData: FormData): Promise<void> {
+  const existing = await prisma.cat.findUnique({ where: { id } })
+  if (!existing) redirect('/admin/cicak')
+
+  const name = String(formData.get('name') ?? '').trim()
+  const shelterId = String(formData.get('shelterId') ?? '')
+  const sex = String(formData.get('sex') ?? 'hím')
+  const ageText = String(formData.get('ageText') ?? '').trim() || null
+  const ageMonthsRaw = String(formData.get('ageMonths') ?? '').trim()
+  const ageMonths = ageMonthsRaw ? parseInt(ageMonthsRaw, 10) : null
+  const breed = String(formData.get('breed') ?? '').trim() || null
+  const breedType = String(formData.get('breedType') ?? 'keverék')
+  const color = String(formData.get('color') ?? '').trim() || null
+  const colorCategory = String(formData.get('colorCategory') ?? '').trim() || null
+  const coatCss = String(formData.get('coatCss') ?? '').trim() || null
+  const isNeutered = formData.get('isNeutered') === 'on'
+  const isVaccinated = formData.get('isVaccinated') === 'on'
+  const isChipped = formData.get('isChipped') === 'on'
+  const traits = parseTraitsInput(String(formData.get('traits') ?? ''))
+  const description = String(formData.get('description') ?? '').trim() || null
+  const status = String(formData.get('status') ?? 'available')
+
+  const ageGroup = ageMonths != null ? ageGroupFromMonths(ageMonths) : null
+
+  // keep existing photos that were not removed
+  const keptPhotos = formData.getAll('existingPhotos').map(String).filter(Boolean)
+  const newPhotos = await savePhotos(formData)
+  const photos = [...keptPhotos, ...newPhotos]
+
+  await prisma.cat.update({
+    where: { id },
+    data: {
+      name,
+      photos: JSON.stringify(photos),
+      ageMonths,
+      ageText,
+      ageGroup,
+      breed,
+      breedType,
+      color,
+      colorCategory,
+      coatCss,
+      sex,
+      isNeutered,
+      isVaccinated,
+      isChipped,
+      traits: JSON.stringify(traits),
+      description,
+      shelterId,
+      status,
+    },
+  })
+
+  revalidatePath('/cicak')
+  revalidatePath('/')
+  revalidatePath('/admin/cicak')
+  redirect('/admin/cicak')
+}
+
+export async function deleteCat(formData: FormData): Promise<void> {
+  const id = String(formData.get('id') ?? '')
+  if (id) {
+    await prisma.cat.delete({ where: { id } })
+  }
+  revalidatePath('/cicak')
+  revalidatePath('/')
+  revalidatePath('/admin/cicak')
+}
+
+export async function createShelter(formData: FormData): Promise<void> {
+  const name = String(formData.get('name') ?? '').trim()
+  const county = String(formData.get('county') ?? '').trim() || null
+  const address = String(formData.get('address') ?? '').trim() || null
+  const phone = String(formData.get('phone') ?? '').trim() || null
+  const email = String(formData.get('email') ?? '').trim() || null
+  const facebook = String(formData.get('facebook') ?? '').trim() || null
+  const website = String(formData.get('website') ?? '').trim() || null
+  const latRaw = String(formData.get('lat') ?? '').trim()
+  const lngRaw = String(formData.get('lng') ?? '').trim()
+  const lat = latRaw ? parseFloat(latRaw) : null
+  const lng = lngRaw ? parseFloat(lngRaw) : null
+  const description = String(formData.get('description') ?? '').trim() || null
+
+  const logoFiles = formData.getAll('logo') as File[]
+  let logo: string | null = null
+  for (const file of logoFiles) {
+    if (file && typeof file === 'object' && file.size > 0) {
+      const bytes = await file.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+      await fs.mkdir(uploadDir, { recursive: true })
+      const filename = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_')}`
+      await fs.writeFile(path.join(uploadDir, filename), buffer)
+      logo = `/uploads/${filename}`
+    }
+  }
+
+  const slug = `${slugify(name)}-${Math.random().toString(36).slice(2, 6)}`
+
+  await prisma.shelter.create({
+    data: { slug, name, county, address, phone, email, facebook, website, lat, lng, description, logo },
+  })
+
+  revalidatePath('/menhelyek')
+  revalidatePath('/admin/menhelyek')
+  redirect('/admin/menhelyek')
+}
+
+export async function updateShelter(id: string, formData: FormData): Promise<void> {
+  const existing = await prisma.shelter.findUnique({ where: { id } })
+  if (!existing) redirect('/admin/menhelyek')
+
+  const name = String(formData.get('name') ?? '').trim()
+  const county = String(formData.get('county') ?? '').trim() || null
+  const address = String(formData.get('address') ?? '').trim() || null
+  const phone = String(formData.get('phone') ?? '').trim() || null
+  const email = String(formData.get('email') ?? '').trim() || null
+  const facebook = String(formData.get('facebook') ?? '').trim() || null
+  const website = String(formData.get('website') ?? '').trim() || null
+  const latRaw = String(formData.get('lat') ?? '').trim()
+  const lngRaw = String(formData.get('lng') ?? '').trim()
+  const lat = latRaw ? parseFloat(latRaw) : null
+  const lng = lngRaw ? parseFloat(lngRaw) : null
+  const description = String(formData.get('description') ?? '').trim() || null
+
+  let logo = existing.logo
+  const logoFiles = formData.getAll('logo') as File[]
+  for (const file of logoFiles) {
+    if (file && typeof file === 'object' && file.size > 0) {
+      const bytes = await file.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+      await fs.mkdir(uploadDir, { recursive: true })
+      const filename = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_')}`
+      await fs.writeFile(path.join(uploadDir, filename), buffer)
+      logo = `/uploads/${filename}`
+    }
+  }
+
+  await prisma.shelter.update({
+    where: { id },
+    data: { name, county, address, phone, email, facebook, website, lat, lng, description, logo },
+  })
+
+  revalidatePath('/menhelyek')
+  revalidatePath('/admin/menhelyek')
+  redirect('/admin/menhelyek')
+}
+
+export async function deleteShelter(formData: FormData): Promise<void> {
+  const id = String(formData.get('id') ?? '')
+  if (id) {
+    const count = await prisma.cat.count({ where: { shelterId: id } })
+    if (count === 0) {
+      await prisma.shelter.delete({ where: { id } })
+    }
+  }
+  revalidatePath('/menhelyek')
+  revalidatePath('/admin/menhelyek')
+}

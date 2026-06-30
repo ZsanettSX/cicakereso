@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Cat {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  photos       String   @default("[]")
+  ageMonths    Int?
+  ageText      String?
+  ageGroup     String?
+  breed        String?
+  breedType    String   @default("keverék")
+  color        String?
+  colorCategory String?
+  coatCss      String?
+  sex          String
+  isNeutered   Boolean  @default(false)
+  isVaccinated Boolean  @default(false)
+  isChipped    Boolean  @default(false)
+  traits       String   @default("[]")
+  description  String?
+  shelterId    String
+  shelter      Shelter  @relation(fields: [shelterId], references: [id])
+  uploadedAt   DateTime @default(now())
+  status       String   @default("available")
+}
+
+model Shelter {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  logo        String?
+  description String?
+  address     String?
+  county      String?
+  lat         Float?
+  lng         Float?
+  phone       String?
+  email       String?
+  facebook    String?
+  website     String?
+  cats        Cat[]
+  createdAt   DateTime @default(now())
+}
