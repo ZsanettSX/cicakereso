@@ -7,10 +7,15 @@ import { parseTraits } from '@/lib/utils'
 import type { CatCardData } from './CatCard'
 
 export default function CatCarousel({ cats }: { cats: CatCardData[] }) {
-  const [active, setActive] = useState(0)
-  const [containerW, setContainerW] = useState(0)
-  const containerRef = useRef<HTMLDivElement>(null)
   const n = cats.length
+  // Triple the array so we can loop infinitely: [copy A | real | copy B]
+  const items = [...cats, ...cats, ...cats]
+
+  const [active, setActive] = useState(n) // start at first card of the "real" middle copy
+  const [animated, setAnimated] = useState(true)
+  const isJumping = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerW, setContainerW] = useState(0)
 
   useEffect(() => {
     const el = containerRef.current
@@ -21,43 +26,69 @@ export default function CatCarousel({ cats }: { cats: CatCardData[] }) {
     return () => ro.disconnect()
   }, [])
 
-  const isMobile = containerW < 640
+  const isMobile = containerW > 0 && containerW < 640
   const CARD_W = isMobile ? Math.round(containerW * 0.72) : 300
-  const GAP = isMobile ? 16 : 24
+  const GAP = isMobile ? 10 : 12
   const translateX = containerW > 0
     ? containerW / 2 - CARD_W / 2 - active * (CARD_W + GAP)
     : 0
 
-  const prev = () => setActive((i) => Math.max(0, i - 1))
-  const next = () => setActive((i) => Math.min(n - 1, i + 1))
+  const prev = useCallback(() => { if (!isJumping.current) setActive(i => i - 1) }, [])
+  const next = useCallback(() => { if (!isJumping.current) setActive(i => i + 1) }, [])
 
-  // Touch/swipe support
+  // After each animated step, silently reset to the middle copy if we drifted to A or B
+  useEffect(() => {
+    if (isJumping.current) return
+    const timer = setTimeout(() => {
+      if (active < n || active >= 2 * n) {
+        isJumping.current = true
+        setAnimated(false)
+        setActive(a => ((a % n) + n) % n + n) // equivalent index in middle copy
+      }
+    }, 460)
+    return () => clearTimeout(timer)
+  }, [active, n])
+
+  // Re-enable animation after silent jump
+  useEffect(() => {
+    if (!animated) {
+      const f1 = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setAnimated(true)
+          isJumping.current = false
+        })
+      })
+      return () => cancelAnimationFrame(f1)
+    }
+  }, [animated])
+
+  // Touch swipe
   const touchStartX = useRef<number | null>(null)
   const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX }
   const onTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return
     const diff = touchStartX.current - e.changedTouches[0].clientX
-    if (diff > 50) next()
-    else if (diff < -50) prev()
+    if (diff > 40) next()
+    else if (diff < -40) prev()
     touchStartX.current = null
   }
 
-  const btnStyle = (disabled: boolean): React.CSSProperties => ({
+  const btnStyle: React.CSSProperties = {
     width: 42, height: 42, borderRadius: '50%',
     border: '1.5px solid var(--cream-200)',
-    background: disabled ? 'var(--cream-100)' : 'var(--white)',
-    color: disabled ? 'var(--cocoa-300)' : 'var(--forest-700)',
-    cursor: disabled ? 'default' : 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    boxShadow: disabled ? 'none' : 'var(--shadow-sm)',
-    transition: 'all var(--dur-base) var(--ease-out)', flexShrink: 0,
-  })
+    background: 'var(--white)', color: 'var(--forest-700)',
+    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    boxShadow: 'var(--shadow-sm)', flexShrink: 0,
+    transition: 'all var(--dur-base) var(--ease-out)',
+  }
+
+  const dotIndex = ((active % n) + n) % n
 
   return (
     <div>
       <div
         ref={containerRef}
-        style={{ overflow: 'hidden', padding: '16px 0 24px', cursor: 'grab' }}
+        style={{ overflow: 'hidden', padding: '16px 0 20px' }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -66,31 +97,29 @@ export default function CatCarousel({ cats }: { cats: CatCardData[] }) {
             display: 'flex',
             gap: GAP,
             transform: `translateX(${translateX}px)`,
-            transition: 'transform 0.45s cubic-bezier(0.22,0.61,0.36,1)',
+            transition: animated ? 'transform 0.45s cubic-bezier(0.22,0.61,0.36,1)' : 'none',
             willChange: 'transform',
           }}
         >
-          {cats.map((cat, i) => {
+          {items.map((cat, i) => {
             const diff = Math.abs(i - active)
-            const isActive = diff === 0
+            const isActive = i === active
             const photos: string[] = (() => { try { return JSON.parse(cat.photos) } catch { return [] } })()
             const photo = photos[0] ?? null
             const traits = parseTraits(cat.traits).slice(0, 3)
-
             const scale = isActive ? 1 : diff === 1 ? 0.88 : 0.8
             const opacity = isActive ? 1 : diff === 1 ? 0.82 : diff === 2 ? 0.55 : 0
 
             return (
               <div
-                key={cat.id}
-                onClick={() => !isActive && setActive(i)}
+                key={`${cat.id}-${i}`}
+                onClick={() => { if (!isActive && !isJumping.current) setActive(i) }}
                 style={{
-                  flexShrink: 0,
-                  width: CARD_W,
+                  flexShrink: 0, width: CARD_W,
                   transform: `scale(${scale})`,
                   transformOrigin: 'top center',
                   opacity,
-                  transition: 'transform 0.45s cubic-bezier(0.22,0.61,0.36,1), opacity 0.45s ease',
+                  transition: animated ? 'transform 0.45s cubic-bezier(0.22,0.61,0.36,1), opacity 0.45s ease' : 'none',
                   cursor: isActive ? 'default' : 'pointer',
                   pointerEvents: diff > 2 ? 'none' : 'auto',
                 }}
@@ -99,31 +128,26 @@ export default function CatCarousel({ cats }: { cats: CatCardData[] }) {
                   href={`/cicak/${cat.slug}`}
                   onClick={(e) => { if (!isActive) e.preventDefault() }}
                   style={{
-                    textDecoration: 'none',
-                    display: 'block',
-                    borderRadius: 'var(--radius-lg)',
-                    overflow: 'hidden',
-                    background: 'var(--white)',
-                    border: '1px solid var(--cream-200)',
+                    textDecoration: 'none', display: 'block',
+                    borderRadius: 'var(--radius-lg)', overflow: 'hidden',
+                    background: 'var(--white)', border: '1px solid var(--cream-200)',
                     boxShadow: isActive ? '0 20px 48px rgba(104,66,48,0.18)' : 'var(--shadow-sm)',
-                    transition: 'box-shadow 0.45s ease',
+                    transition: animated ? 'box-shadow 0.45s ease' : 'none',
                   }}
                 >
-                  {/* Image */}
-                  <div style={{ position: 'relative', aspectRatio: isMobile ? '3/4' : '4/3', overflow: 'hidden' }}>
+                  {/* 1:1 image */}
+                  <div style={{ position: 'relative', aspectRatio: '1 / 1', overflow: 'hidden' }}>
                     {photo
                       ? <img src={photo} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       : <div style={{ width: '100%', height: '100%', background: 'var(--cream-100)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <img src="/mascot-cat.png" alt="" style={{ width: '50%', opacity: 0.4 }} />
                         </div>
                     }
-                    {/* Trait chips on image */}
                     {traits.length > 0 && (
                       <div style={{ position: 'absolute', bottom: 10, left: 10, display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                         {traits.map((t) => (
                           <span key={t} style={{
-                            background: 'rgba(255,255,255,0.90)',
-                            backdropFilter: 'blur(4px)',
+                            background: 'rgba(255,255,255,0.90)', backdropFilter: 'blur(4px)',
                             fontFamily: 'var(--font-display)', fontWeight: 600,
                             fontSize: 'var(--text-xs)', padding: '3px 9px',
                             borderRadius: 'var(--radius-pill)', color: 'var(--cocoa-700)',
@@ -131,14 +155,13 @@ export default function CatCarousel({ cats }: { cats: CatCardData[] }) {
                         ))}
                       </div>
                     )}
-                    {/* Favorite */}
                     <div style={{ position: 'absolute', top: 10, right: 10 }} onClick={(e) => e.preventDefault()}>
                       <FavoriteButton slug={cat.slug} />
                     </div>
                   </div>
 
                   {/* Info */}
-                  <div style={{ padding: '14px 16px 16px' }}>
+                  <div style={{ padding: '12px 14px 14px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                       <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--cocoa-800)', lineHeight: 1.1 }}>
                         {cat.name}
@@ -151,7 +174,7 @@ export default function CatCarousel({ cats }: { cats: CatCardData[] }) {
                       </span>
                     </div>
                     {(cat.breed || cat.ageText) && (
-                      <p style={{ margin: '5px 0 0', fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
+                      <p style={{ margin: '4px 0 0', fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
                         {[cat.breed, cat.ageText].filter(Boolean).join(' · ')}
                       </p>
                     )}
@@ -170,7 +193,7 @@ export default function CatCarousel({ cats }: { cats: CatCardData[] }) {
 
       {/* Navigation */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16 }}>
-        <button onClick={prev} disabled={active === 0} style={btnStyle(active === 0)} aria-label="Előző">
+        <button onClick={prev} style={btnStyle} aria-label="Előző">
           <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
         </button>
 
@@ -178,20 +201,19 @@ export default function CatCarousel({ cats }: { cats: CatCardData[] }) {
           {cats.map((_, i) => (
             <button
               key={i}
-              onClick={() => setActive(i)}
+              onClick={() => setActive(Math.floor(active / n) * n + i)}
               aria-label={`${i + 1}. cica`}
               style={{
-                width: i === active ? 22 : 8, height: 8,
+                width: i === dotIndex ? 22 : 8, height: 8,
                 borderRadius: 'var(--radius-pill)', border: 'none', padding: 0,
-                background: i === active ? 'var(--forest-700)' : 'var(--sage-300)',
-                cursor: 'pointer',
-                transition: 'all 0.3s var(--ease-out)',
+                background: i === dotIndex ? 'var(--forest-700)' : 'var(--sage-300)',
+                cursor: 'pointer', transition: 'all 0.3s var(--ease-out)',
               }}
             />
           ))}
         </div>
 
-        <button onClick={next} disabled={active === n - 1} style={btnStyle(active === n - 1)} aria-label="Következő">
+        <button onClick={next} style={btnStyle} aria-label="Következő">
           <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
         </button>
       </div>
