@@ -24,6 +24,7 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
   const [fajta, setFajta] = useState<string[]>(getMulti('fajta'))
   const [megye, setMegye] = useState<string[]>(getMulti('megye'))
   const [rendez, setRendez] = useState(get('rendez'))
+  const [megyeSearch, setMegyeSearch] = useState('')
 
   const push = useCallback(
     (updates: Record<string, string>) => {
@@ -194,10 +195,27 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
       {/* County */}
       <div>
         <label style={sectionLabel}>Megye / Helyszín</label>
-        <div style={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {HUNGARIAN_COUNTIES.map((c) => (
-            <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--cocoa-700)', padding: '3px 0' }}>
-              <input type="checkbox" checked={megye.includes(c)} onChange={() => toggleMegye(c)} style={{ accentColor: 'var(--forest-700)', width: 15, height: 15 }} />
+        <input
+          type="text"
+          placeholder="Keresés..."
+          value={megyeSearch}
+          onChange={(e) => setMegyeSearch(e.target.value)}
+          style={{
+            width: '100%', marginBottom: 6,
+            padding: '6px 10px',
+            borderRadius: 'var(--radius-md)',
+            border: '1.5px solid var(--cream-200)',
+            fontFamily: 'var(--font-body)',
+            fontSize: 'var(--text-sm)',
+            color: 'var(--cocoa-800)',
+            background: 'var(--cream-50)',
+            boxSizing: 'border-box',
+          }}
+        />
+        <div className="ck-county-list" style={{ maxHeight: 200, overflowY: 'scroll', display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {HUNGARIAN_COUNTIES.filter(c => c.toLowerCase().includes(megyeSearch.toLowerCase())).map((c) => (
+            <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--cocoa-700)', padding: '3px 2px' }}>
+              <input type="checkbox" checked={megye.includes(c)} onChange={() => toggleMegye(c)} style={{ accentColor: 'var(--forest-700)', width: 15, height: 15, flexShrink: 0 }} />
               {c}
             </label>
           ))}
@@ -314,6 +332,10 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
           .ck-filter-mobile-toggle { display: block !important; }
           .ck-filter-mobile-overlay { display: block !important; }
         }
+        .ck-county-list { scrollbar-width: thin; scrollbar-color: var(--sage-300) transparent; }
+        .ck-county-list::-webkit-scrollbar { width: 5px; }
+        .ck-county-list::-webkit-scrollbar-track { background: transparent; }
+        .ck-county-list::-webkit-scrollbar-thumb { background: var(--sage-300); border-radius: 99px; }
       `}</style>
     </>
   )
