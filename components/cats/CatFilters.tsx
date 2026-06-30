@@ -139,11 +139,15 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
       <div>
         <label style={sectionLabel}>Nem</label>
         <div style={{ display: 'flex', gap: 8 }}>
-          {['', 'hím', 'nőstény'].map((v) => (
-            <button key={v || 'all'} onClick={() => setNemAndPush(v)} style={chipBtn(nem === v)}>
-              {v === '' ? 'Bármely' : v === 'hím' ? '♂ Hím' : '♀ Nőstény'}
-            </button>
-          ))}
+          <button onClick={() => setNemAndPush('')} style={chipBtn(nem === '')}>Bármely</button>
+          <button onClick={() => setNemAndPush('hím')} style={{ ...chipBtn(nem === 'hím'), display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#3a7fd4" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="14" r="5" /><line x1="19" y1="5" x2="14.1" y2="9.9" /><polyline points="15 5 19 5 19 9" /></svg>
+            Hím
+          </button>
+          <button onClick={() => setNemAndPush('nőstény')} style={{ ...chipBtn(nem === 'nőstény'), display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#d44a6a" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="9" r="5" /><line x1="12" y1="14" x2="12" y2="21" /><line x1="9" y1="18" x2="15" y2="18" /></svg>
+            Nőstény
+          </button>
         </div>
       </div>
 
