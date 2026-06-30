@@ -168,30 +168,13 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
       {/* Colors */}
       <div>
         <label style={sectionLabel}>Szín</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        <div style={{ maxHeight: 220, overflowY: 'auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
           {COLOR_CATEGORIES.map(({ label, css }) => (
-            <button
-              key={label}
-              onClick={() => toggleSzin(label)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '5px 12px 5px 8px',
-                borderRadius: 'var(--radius-pill)',
-                border: szin.includes(label) ? '1.5px solid var(--forest-700)' : '1.5px solid var(--cream-200)',
-                background: szin.includes(label) ? 'var(--sage-100)' : 'var(--white)',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-display)',
-                fontSize: 'var(--text-xs)',
-                color: 'var(--cocoa-700)',
-                fontWeight: szin.includes(label) ? 600 : 500,
-                transition: 'all var(--dur-fast) var(--ease-out)',
-              }}
-            >
-              <span style={{ width: 14, height: 14, borderRadius: '50%', background: css, flexShrink: 0, boxShadow: 'inset 0 0 0 1px rgba(104,66,48,0.2)' }} />
-              {label}
-            </button>
+            <label key={label} style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', padding: '4px 2px', borderRadius: 6, background: szin.includes(label) ? 'var(--sage-100)' : 'transparent', transition: 'background 0.15s' }}>
+              <input type="checkbox" checked={szin.includes(label)} onChange={() => toggleSzin(label)} style={{ accentColor: 'var(--forest-700)', width: 14, height: 14, flexShrink: 0 }} />
+              <span style={{ width: 12, height: 12, borderRadius: '50%', background: css, flexShrink: 0, boxShadow: 'inset 0 0 0 1px rgba(104,66,48,0.2)' }} />
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--cocoa-700)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>
+            </label>
           ))}
         </div>
       </div>
