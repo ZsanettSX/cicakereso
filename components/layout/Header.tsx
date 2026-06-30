@@ -68,15 +68,16 @@ export default function Header() {
       >
         <Link
           href="/"
-          style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', textDecoration: 'none' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}
         >
-          <img src="/logo-circle.png" alt="CicaKereső logó" width={40} height={40} style={{ borderRadius: '50%' }} />
+          <img src="/mascot-cat.png" alt="" width={38} height={38} style={{ objectFit: 'contain' }} />
           <span
             style={{
-              fontFamily: 'var(--font-display)',
+              fontFamily: "'Holla', var(--font-display)",
               fontWeight: 800,
-              fontSize: 'var(--text-lg)',
-              color: 'var(--forest-700)',
+              fontSize: 'var(--text-xl)',
+              color: 'var(--cocoa-800)',
+              letterSpacing: '-0.01em',
             }}
           >
             CicaKereső
