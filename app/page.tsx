@@ -46,12 +46,14 @@ export default async function HomePage() {
   return (
     <div>
       {/* HERO */}
-      <section style={{ background: 'var(--cream-50)', overflow: 'hidden' }}>
+      <section style={{ background: '#f7f7f5', overflow: 'hidden' }}>
         <div className="ck-container" style={{ padding: '64px 28px 8px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: 'clamp(2.4rem, 5.5vw, var(--text-4xl))', margin: '0 auto 18px', lineHeight: 1.08, maxWidth: 900 }}>
-            Találd meg <span style={{ color: 'var(--camel-600)' }}>álmaid cicáját</span> néhány kattintással
+          <h1 style={{ fontSize: 'clamp(2.4rem, 5.5vw, var(--text-4xl))', margin: '0 auto 18px', lineHeight: 1.08, maxWidth: 900, fontWeight: 800, color: 'var(--cocoa-800)' }}>
+            Találd meg{' '}
+            <span style={{ color: 'var(--mustard)', textDecoration: 'underline', textDecorationThickness: 3, textUnderlineOffset: 5 }}>álmaid cicáját</span>
+            {' '}néhány kattintással
           </h1>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-md)', color: 'var(--text-body)', lineHeight: 1.7, margin: '0 auto', maxWidth: 640 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-md)', color: 'var(--cocoa-700)', lineHeight: 1.7, margin: '0 auto', maxWidth: 600 }}>
             Böngéssz Magyarország legnagyobb örökbefogadható cica-adatbázisában. Minden lakó oltott, ivartalanított és egészségügyileg ellenőrzött.
           </p>
         </div>
@@ -64,23 +66,20 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* STATS + CTA */}
-      <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '40px 28px 0', textAlign: 'center' }}>
-        <div style={{ display: 'inline-flex', gap: 64, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-          {[
-            [`${catCount}+`, 'örökbefogadható cica'],
-            [`${shelterCount}+`, 'partner menhely'],
-          ].map(([n, l]) => (
-            <div key={l} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'var(--text-3xl)', color: 'var(--camel-600)', lineHeight: 1 }}>{n}</div>
-              <div style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)', marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 'var(--text-xs)' }}>{l}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 18 }}>
-          <Link href="/cicak" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--camel-600)', textDecoration: 'none', fontSize: 'var(--text-md)' }}>
-            Megnézem →
-          </Link>
+      {/* STATS */}
+      <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '32px 28px 0', textAlign: 'center' }}>
+        <div style={{ display: 'inline-flex', gap: 56, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'var(--text-3xl)', color: 'var(--mustard)', lineHeight: 1 }}>{catCount}+</div>
+            <div style={{ fontFamily: 'var(--font-body)', color: 'var(--cocoa-700)', marginTop: 4, fontSize: 'var(--text-sm)' }}>örökbefogadható cica</div>
+            <Link href="/cicak" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--mustard)', fontSize: 'var(--text-sm)', display: 'inline-block', marginTop: 2 }}>
+              Megnézem →
+            </Link>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'var(--text-3xl)', color: 'var(--mustard)', lineHeight: 1 }}>{shelterCount}+</div>
+            <div style={{ fontFamily: 'var(--font-body)', color: 'var(--cocoa-700)', marginTop: 4, fontSize: 'var(--text-sm)' }}>partner menhely</div>
+          </div>
         </div>
       </section>
 

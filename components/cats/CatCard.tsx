@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Badge from '../ui/Badge'
 import Tag from '../ui/Tag'
 import FavoriteButton from './FavoriteButton'
 import { parseTraits } from '@/lib/utils'
@@ -77,9 +76,6 @@ export default function CatCard({ cat }: { cat: CatCardData }) {
               <img src="/mascot-cat.png" alt="" style={{ width: '60%', height: '60%', objectFit: 'contain', opacity: 0.5 }} />
             </div>
           )}
-          <div style={{ position: 'absolute', top: 10, left: 10 }}>
-            <Badge status={cat.status} />
-          </div>
           <div style={{ position: 'absolute', top: 8, right: 8 }} onClick={(e) => e.preventDefault()}>
             <FavoriteButton slug={cat.slug} />
           </div>
@@ -88,18 +84,6 @@ export default function CatCard({ cat }: { cat: CatCardData }) {
         {/* Body */}
         <div style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {cat.coatCss && (
-              <span
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  background: cat.coatCss,
-                  flexShrink: 0,
-                  boxShadow: 'inset 0 0 0 1px rgba(104,66,48,0.15)',
-                }}
-              />
-            )}
             <h3
               style={{
                 margin: 0,
@@ -112,8 +96,16 @@ export default function CatCard({ cat }: { cat: CatCardData }) {
             >
               {cat.name}
             </h3>
-            <span style={{ marginLeft: 'auto', fontSize: 16, color: cat.sex === 'hím' ? 'var(--info)' : 'var(--danger)' }}>
-              {cat.sex === 'hím' ? '♂' : '♀'}
+            <span style={{ marginLeft: 'auto', flexShrink: 0 }}>
+              {cat.sex === 'hím' ? (
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#3a7fd4" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="10" cy="14" r="5" /><line x1="19" y1="5" x2="14.1" y2="9.9" /><polyline points="15 5 19 5 19 9" />
+                </svg>
+              ) : (
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#d44a6a" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="9" r="5" /><line x1="12" y1="14" x2="12" y2="21" /><line x1="9" y1="18" x2="15" y2="18" />
+                </svg>
+              )}
             </span>
           </div>
 
