@@ -221,8 +221,10 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
               </label>
             ))}
           </div>
-          {/* Gradient fade to hint scrollability */}
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 32, background: 'linear-gradient(to bottom, transparent, var(--white))', pointerEvents: 'none', borderRadius: '0 0 4px 4px' }} />
+          {/* Scroll hint */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 48, background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 60%, #ffffff 100%)', pointerEvents: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 4 }}>
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--sage-500)" strokeWidth={2.5} strokeLinecap="round"><path d="M6 9l6 6 6-6" /></svg>
+          </div>
         </div>
       </div>
 
