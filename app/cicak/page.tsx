@@ -78,7 +78,11 @@ async function CatListContent({ searchParams }: { searchParams: SearchParams }) 
       </Suspense>
 
       <div>
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 24 }}>
+          <h1 style={{ margin: '0 0 8px', fontSize: 'var(--text-2xl)' }}>Örökbefogadható cicák Magyarországon</h1>
+          <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)', margin: '0 0 12px' }}>
+            Találd meg a doromboló szőrmók lelkitársadat – menhelyi cicák, akik új otthont keresnek
+          </p>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
             <strong style={{ color: 'var(--forest-700)', fontWeight: 700 }}>{cards.length}</strong> cica elérhető
           </span>
