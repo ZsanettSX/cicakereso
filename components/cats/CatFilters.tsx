@@ -168,7 +168,7 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
       {/* Colors */}
       <div>
         <label style={sectionLabel}>Szín</label>
-        <div style={{ maxHeight: 220, overflowY: 'auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {COLOR_CATEGORIES.map(({ label, css }) => (
             <label key={label} style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', padding: '4px 2px', borderRadius: 6, background: szin.includes(label) ? 'var(--sage-100)' : 'transparent', transition: 'background 0.15s' }}>
               <input type="checkbox" checked={szin.includes(label)} onChange={() => toggleSzin(label)} style={{ accentColor: 'var(--forest-700)', width: 14, height: 14, flexShrink: 0 }} />
