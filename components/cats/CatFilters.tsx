@@ -138,7 +138,7 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
       {/* Sex */}
       <div>
         <label style={sectionLabel}>Nem</label>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <button onClick={() => setNemAndPush('')} style={chipBtn(nem === '')}>Bármely</button>
           <button onClick={() => setNemAndPush('hím')} style={{ ...chipBtn(nem === 'hím'), display: 'inline-flex', alignItems: 'center', gap: 5 }}>
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#3a7fd4" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="14" r="5" /><line x1="19" y1="5" x2="14.1" y2="9.9" /><polyline points="15 5 19 5 19 9" /></svg>
