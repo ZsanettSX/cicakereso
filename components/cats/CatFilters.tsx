@@ -264,7 +264,7 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
   return (
     <>
       {/* Mobile toggle button */}
-      <div className="ck-filter-mobile-toggle" style={{ display: 'none', marginBottom: 16 }}>
+      <div className="ck-filter-mobile-toggle" style={{ display: 'none', marginBottom: 8 }}>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           style={{

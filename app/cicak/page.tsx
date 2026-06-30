@@ -91,8 +91,8 @@ async function CatListContent({ searchParams }: { searchParams: SearchParams }) 
       </div>
 
       <style>{`
-        @media(max-width:900px){.ck-browse-layout{grid-template-columns:1fr!important;}}
-        @media(max-width:480px){.ck-cicak-page{padding-left:10px!important;padding-right:10px!important;}}
+        @media(max-width:900px){.ck-browse-layout{grid-template-columns:1fr!important; gap:8px!important;}}
+        @media(max-width:480px){.ck-cicak-page{padding-left:10px!important;padding-right:10px!important;padding-top:20px!important;}}
       `}</style>
     </div>
   )
