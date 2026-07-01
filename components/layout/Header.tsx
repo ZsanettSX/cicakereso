@@ -66,21 +66,19 @@ export default function Header() {
           justifyContent: 'space-between',
         }}
       >
-        <Link
-          href="/"
-          style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}
-        >
-          <img src="/mascot-cat.png" alt="" width={38} height={38} style={{ objectFit: 'contain' }} />
-          <span
-            style={{
-              fontFamily: "'Holla', var(--font-display)",
-              fontWeight: 800,
-              fontSize: 'var(--text-xl)',
-              color: 'var(--cocoa-800)',
-              letterSpacing: '-0.01em',
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <img src="/logo-wide.png" alt="CicaKereső" height={40} style={{ objectFit: 'contain', display: 'block' }}
+            onError={(e) => {
+              const t = e.currentTarget
+              t.style.display = 'none'
+              const fallback = t.nextElementSibling as HTMLElement | null
+              if (fallback) fallback.style.display = 'flex'
             }}
-          >
-            CicaKereső
+          />
+          {/* Fallback while logo-wide.png is not yet uploaded */}
+          <span style={{ display: 'none', alignItems: 'center', gap: 8 }}>
+            <img src="/mascot-cat.png" alt="" width={36} height={36} style={{ objectFit: 'contain' }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'var(--text-xl)', color: 'var(--cocoa-800)' }}>CicaKereső</span>
           </span>
         </Link>
 

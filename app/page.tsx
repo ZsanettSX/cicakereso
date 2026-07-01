@@ -48,21 +48,21 @@ export default async function HomePage() {
     <div>
       {/* HERO */}
       <section style={{ background: '#f7f7f5', overflow: 'hidden' }}>
-        <div className="ck-container" style={{ padding: '64px 28px 8px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: 'clamp(2.4rem, 5.5vw, var(--text-4xl))', margin: '0 auto 18px', lineHeight: 1.08, maxWidth: 900, fontWeight: 800, color: 'var(--cocoa-800)' }}>
+        <div className="ck-container" style={{ padding: '28px 28px 4px', textAlign: 'center' }}>
+          <h1 style={{ fontSize: 'clamp(2.4rem, 5.5vw, var(--text-4xl))', margin: '0 auto 12px', lineHeight: 1.08, maxWidth: 900, fontWeight: 800, color: 'var(--cocoa-800)' }}>
             Találd meg{' '}
             <span style={{ color: 'var(--mustard)', textDecoration: 'underline', textDecorationThickness: 3, textUnderlineOffset: 5 }}>álmaid cicáját</span>
             {' '}néhány kattintással
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-md)', color: 'var(--cocoa-700)', lineHeight: 1.7, margin: '0 auto', maxWidth: 600 }}>
-            Böngéssz Magyarország legnagyobb örökbefogadható cica-adatbázisában. Minden lakó oltott, ivartalanított és egészségügyileg ellenőrzött.
+            Böngéssz Magyarország legnagyobb örökbefogadható cica-adatbázisában.
           </p>
         </div>
       </section>
 
       {/* NEWEST CATS CAROUSEL */}
       {newest.length > 0 && (
-        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '36px 28px 0' }}>
+        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '12px 28px 0' }}>
           <CatCarousel cats={newest} />
         </section>
       )}
