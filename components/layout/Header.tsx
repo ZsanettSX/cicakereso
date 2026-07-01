@@ -40,9 +40,9 @@ export default function Header() {
     fontFamily: 'var(--font-display)',
     fontWeight: 600,
     fontSize: 'var(--text-base)',
-    color: active ? 'var(--forest-700)' : 'var(--cocoa-700)',
+    color: active ? 'var(--camel-500)' : 'var(--cocoa-700)',
     textDecoration: 'none',
-    padding: '0.4rem 0',
+    padding: '0.4rem 0 2px',
     borderBottom: active ? '2px solid var(--camel-500)' : '2px solid transparent',
   })
 
