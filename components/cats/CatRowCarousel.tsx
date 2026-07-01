@@ -90,7 +90,6 @@ export default function CatRowCarousel({ cats }: { cats: CatCardData[] }) {
             msOverflowStyle: 'none',
           }}
         >
-          <div style={{ flexShrink: 0, width: GAP }} aria-hidden="true" />
           {cats.map((cat) => {
             const photos: string[] = (() => { try { return JSON.parse(cat.photos) } catch { return [] } })()
             const photo = photos[0] ?? null
@@ -176,7 +175,6 @@ export default function CatRowCarousel({ cats }: { cats: CatCardData[] }) {
               </div>
             )
           })}
-          <div style={{ flexShrink: 0, width: GAP }} aria-hidden="true" />
         </div>
       </div>
 

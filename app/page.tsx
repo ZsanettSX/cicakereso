@@ -92,8 +92,8 @@ export default async function HomePage() {
 
       {/* KÖLYKÖK */}
       {kolykoks.length > 0 && (
-        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '56px 28px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24 }}>
+        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '56px 0 0' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24, padding: '0 28px' }}>
             <div>
               <p className="ck-eyebrow">0–11 hónapos</p>
               <h2 style={{ margin: '6px 0 0' }}>Legkisebb szőrmókaink</h2>
@@ -108,8 +108,8 @@ export default async function HomePage() {
 
       {/* IDŐS CICÁK */}
       {idosek.length > 0 && (
-        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '56px 28px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24 }}>
+        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '56px 0 0' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24, padding: '0 28px' }}>
             <div>
               <p className="ck-eyebrow">8+ éves</p>
               <h2 style={{ margin: '6px 0 0' }}>Érett cicáink</h2>
