@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/db'
 import { updateShelter } from '@/lib/actions'
 import ShelterForm from '@/components/admin/ShelterForm'

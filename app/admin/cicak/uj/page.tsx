@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/db'
 import { createCat } from '@/lib/actions'
 import CatForm from '@/components/admin/CatForm'

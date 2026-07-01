@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createShelter } from '@/lib/actions'
 import ShelterForm from '@/components/admin/ShelterForm'
 
