@@ -1,34 +1,30 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
+import { createClient } from '@libsql/client'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const tursoUrl = process.env.TURSO_DATABASE_URL ?? ''
   const tursoToken = process.env.TURSO_AUTH_TOKEN ?? ''
+  const httpUrl = tursoUrl.replace('libsql://', 'https://')
 
   const info: Record<string, unknown> = {
     turso_url_tail: tursoUrl.slice(-40),
-    turso_token_set: !!tursoToken,
+    http_url_tail: httpUrl.slice(-40),
     node_env: process.env.NODE_ENV,
   }
 
-  // Test fresh Prisma client (not the singleton from lib/db)
+  // Test @libsql/client directly with https:// (no Prisma)
   try {
-    const httpUrl = tursoUrl.replace('libsql://', 'https://')
-    const adapter = new PrismaLibSql({ url: httpUrl, authToken: tursoToken })
-    const client = new PrismaClient({ adapter } as any)
-    const tables = await client.$queryRaw<{ name: string }[]>`SELECT name FROM sqlite_master WHERE type='table'`
-    info.prisma_tables = tables.map((t) => t.name)
-    const catCount = await client.cat.count()
-    info.cat_count = catCount
-    info.prisma_status = 'OK'
-    await client.$disconnect()
+    const client = createClient({ url: httpUrl, authToken: tursoToken })
+    const result = await client.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    info.libsql_tables = result.rows.map((r) => r[0])
+    const catResult = await client.execute('SELECT COUNT(*) as n FROM Cat')
+    info.cat_count = catResult.rows[0]?.[0]
+    info.libsql_status = 'OK'
   } catch (e: any) {
-    info.prisma_status = 'ERROR'
-    info.prisma_error = e?.message
-    info.prisma_stack = e?.stack?.split('\n').slice(0, 5).join(' | ')
+    info.libsql_status = 'ERROR'
+    info.libsql_error = e?.message
   }
 
   return NextResponse.json(info)
