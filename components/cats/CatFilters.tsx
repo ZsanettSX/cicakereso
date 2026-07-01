@@ -281,19 +281,28 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 8,
-            padding: '10px 20px',
+            gap: 10,
+            padding: '12px 24px',
             borderRadius: 'var(--radius-pill)',
-            border: `1.5px solid ${hasFilters ? 'var(--forest-700)' : 'var(--cream-200)'}`,
+            border: `2px solid ${hasFilters ? 'var(--forest-700)' : 'var(--cream-200)'}`,
             background: hasFilters ? 'var(--sage-100)' : 'var(--white)',
             color: hasFilters ? 'var(--forest-700)' : 'var(--cocoa-700)',
             fontFamily: 'var(--font-display)',
-            fontWeight: 600,
+            fontWeight: 700,
+            fontSize: 'var(--text-md)',
             cursor: 'pointer',
+            boxShadow: 'var(--shadow-sm)',
           }}
         >
-          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="12" y1="18" x2="12" y2="18" /></svg>
-          Szűrők {hasFilters && '(aktív)'}
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <circle cx="8" cy="6" r="2" fill="currentColor" stroke="none" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <circle cx="16" cy="12" r="2" fill="currentColor" stroke="none" />
+            <line x1="4" y1="18" x2="20" y2="18" />
+            <circle cx="10" cy="18" r="2" fill="currentColor" stroke="none" />
+          </svg>
+          Szűrők {hasFilters && <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)', opacity: 0.75 }}>(aktív)</span>}
         </button>
       </div>
 
