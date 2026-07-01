@@ -16,7 +16,8 @@ export async function GET() {
 
   // Test fresh Prisma client (not the singleton from lib/db)
   try {
-    const adapter = new PrismaLibSql({ url: tursoUrl, authToken: tursoToken })
+    const httpUrl = tursoUrl.replace('libsql://', 'https://')
+    const adapter = new PrismaLibSql({ url: httpUrl, authToken: tursoToken })
     const client = new PrismaClient({ adapter } as any)
     const tables = await client.$queryRaw<{ name: string }[]>`SELECT name FROM sqlite_master WHERE type='table'`
     info.prisma_tables = tables.map((t) => t.name)

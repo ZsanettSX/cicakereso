@@ -9,8 +9,10 @@ declare global {
 function makePrisma(): PrismaClient {
   const tursoUrl = process.env.TURSO_DATABASE_URL
   if (tursoUrl) {
+    // libsql:// triggers embedded-replica mode (needs local file); https:// uses HTTP transport
+    const httpUrl = tursoUrl.replace('libsql://', 'https://')
     const adapter = new PrismaLibSql({
-      url: tursoUrl,
+      url: httpUrl,
       authToken: process.env.TURSO_AUTH_TOKEN,
     })
     return new PrismaClient({ adapter })
