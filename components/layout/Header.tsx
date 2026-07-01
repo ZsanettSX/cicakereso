@@ -47,6 +47,7 @@ export default function Header() {
   })
 
   return (
+    <>
     <header
       style={{
         position: 'sticky',
@@ -192,7 +193,20 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile slide-in panel */}
+      <style>{`
+        @media (max-width: 768px) {
+          .ck-desktop-nav { display: none !important; }
+          .ck-hamburger { display: inline-flex !important; }
+          .ck-fav-label { display: none; }
+        }
+        @keyframes ck-slide-in {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+      `}</style>
+    </header>
+
+      {/* Mobile slide-in panel — rendered outside <header> so position:fixed works on iOS */}
       {mobileOpen && (
         <>
           {/* Overlay */}
@@ -286,18 +300,6 @@ export default function Header() {
           </div>
         </>
       )}
-
-      <style>{`
-        @media (max-width: 768px) {
-          .ck-desktop-nav { display: none !important; }
-          .ck-hamburger { display: inline-flex !important; }
-          .ck-fav-label { display: none; }
-        }
-        @keyframes ck-slide-in {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-      `}</style>
-    </header>
+    </>
   )
 }
