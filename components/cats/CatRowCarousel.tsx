@@ -179,7 +179,7 @@ export default function CatRowCarousel({ cats }: { cats: CatCardData[] }) {
       </div>
 
       {/* Navigation */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 6 }}>
         <button
           onClick={() => scrollBy(-1)}
           disabled={!canPrev}
