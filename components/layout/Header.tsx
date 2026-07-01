@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const NAV = [
-  { href: '/', label: 'Főoldal' },
   { href: '/cicak', label: 'Cicák' },
   { href: '/menhelyek', label: 'Menhelyek' },
 ]
@@ -32,18 +31,19 @@ export default function Header() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
+  const [hovered, setHovered] = useState<string | null>(null)
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href)
+  const isActive = (href: string) => pathname.startsWith(href)
 
-  const linkStyle = (active: boolean) => ({
+  const linkStyle = (href: string, active: boolean) => ({
     fontFamily: 'var(--font-display)',
     fontWeight: 600,
-    fontSize: 'var(--text-base)',
+    fontSize: 'var(--text-sm)',
     color: active ? 'var(--camel-500)' : 'var(--cocoa-700)',
     textDecoration: 'none',
-    padding: '0.4rem 0 2px',
-    borderBottom: active ? '2px solid var(--camel-500)' : '2px solid transparent',
+    padding: '0.3rem 0 2px',
+    borderBottom: (active || hovered === href) ? '2px solid var(--camel-500)' : '2px solid transparent',
+    transition: 'border-color 0.15s ease, color 0.15s ease',
   })
 
   return (
@@ -52,7 +52,7 @@ export default function Header() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        background: 'rgba(250,241,228,0.95)',
+        background: 'rgba(255,252,247,0.97)',
         backdropFilter: 'blur(8px)',
         borderBottom: '1px solid var(--cream-200)',
       }}
@@ -60,14 +60,14 @@ export default function Header() {
       <div
         className="ck-container"
         style={{
-          height: 64,
+          height: 54,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
         <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <img src="/logo-wide.png" alt="CicaKereső" height={40} style={{ objectFit: 'contain', display: 'block' }}
+          <img src="/logo-wide.png" alt="CicaKereső" height={34} style={{ objectFit: 'contain', display: 'block' }}
             onError={(e) => {
               const t = e.currentTarget
               t.style.display = 'none'
@@ -85,22 +85,28 @@ export default function Header() {
         {/* Desktop nav */}
         <nav className="ck-desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-6)' }}>
           {NAV.map((item) => (
-            <Link key={item.href} href={item.href} style={linkStyle(isActive(item.href))}>
+            <Link
+              key={item.href}
+              href={item.href}
+              style={linkStyle(item.href, isActive(item.href))}
+              onMouseEnter={() => setHovered(item.href)}
+              onMouseLeave={() => setHovered(null)}
+            >
               {item.label}
             </Link>
           ))}
           <span
-            style={{ ...linkStyle(false), color: 'var(--text-muted)', cursor: 'not-allowed' }}
+            style={{ ...linkStyle('', false), color: 'var(--text-muted)', cursor: 'not-allowed' }}
             title="Hamarosan"
           >
             Adományozás
           </span>
           <div
             style={{ position: 'relative' }}
-            onMouseEnter={() => setServicesOpen(true)}
-            onMouseLeave={() => setServicesOpen(false)}
+            onMouseEnter={() => { setServicesOpen(true); setHovered('szolgaltatasok') }}
+            onMouseLeave={() => { setServicesOpen(false); setHovered(null) }}
           >
-            <span style={{ ...linkStyle(false), cursor: 'default' }}>Szolgáltatások ▾</span>
+            <span style={{ ...linkStyle('szolgaltatasok', false), cursor: 'default' }}>Szolgáltatások ▾</span>
             {servicesOpen && (
               <div
                 style={{
@@ -135,7 +141,7 @@ export default function Header() {
             )}
           </div>
           <span
-            style={{ ...linkStyle(false), color: 'var(--text-muted)', cursor: 'not-allowed' }}
+            style={{ ...linkStyle('', false), color: 'var(--text-muted)', cursor: 'not-allowed' }}
             title="Hamarosan"
           >
             Blog
