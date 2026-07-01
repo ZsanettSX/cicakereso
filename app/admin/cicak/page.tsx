@@ -33,8 +33,8 @@ export default async function AdminCicakPage() {
             {cats.map((cat) => (
               <tr key={cat.id} style={{ borderTop: '1px solid var(--cream-200)' }}>
                 <td style={{ padding: '11px 14px', fontWeight: 600, color: 'var(--cocoa-800)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {cat.coatCss && <span style={{ width: 10, height: 10, borderRadius: '50%', background: cat.coatCss, flexShrink: 0 }} />}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {(() => { try { const p = JSON.parse(cat.photos)[0]; return p ? <img src={p} alt="" style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} /> : <div style={{ width: 36, height: 36, background: 'var(--cream-100)', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} /> } catch { return <div style={{ width: 36, height: 36, background: 'var(--cream-100)', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} /> } })()}
                     {cat.name}
                   </div>
                 </td>

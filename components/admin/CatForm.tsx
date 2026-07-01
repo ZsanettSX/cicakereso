@@ -217,7 +217,7 @@ export default function CatForm({ shelters, action, initial = {}, submitLabel = 
       {/* Fotó feltöltő — 6 slot */}
       <div>
         <label style={labelStyle}>Fotók</label>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
           {slots.map((slot, i) => (
             <div
               key={i}
@@ -235,8 +235,8 @@ export default function CatForm({ shelters, action, initial = {}, submitLabel = 
               onMouseLeave={e => { if (slot.kind === 'empty') e.currentTarget.style.borderColor = 'var(--cream-300)' }}
             >
               {slot.kind === 'empty' ? (
-                <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke="var(--cream-400)" strokeWidth={1.5} strokeLinecap="round">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="var(--cream-400)" strokeWidth={2} strokeLinecap="round">
+                  <line x1="12" y1="4" x2="12" y2="20" /><line x1="4" y1="12" x2="20" y2="12" />
                 </svg>
               ) : (
                 <>
