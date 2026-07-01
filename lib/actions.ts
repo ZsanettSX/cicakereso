@@ -7,18 +7,26 @@ import path from 'node:path'
 import { prisma } from './db'
 import { slugify, ageGroupFromMonths } from './utils'
 
+async function saveFile(file: File, folder: 'cats' | 'shelters'): Promise<string> {
+  if (process.env.CLOUDINARY_CLOUD_NAME) {
+    const { uploadImage } = await import('./cloudinary')
+    return uploadImage(file, folder)
+  }
+  const bytes = await file.arrayBuffer()
+  const buffer = Buffer.from(bytes)
+  const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+  await fs.mkdir(uploadDir, { recursive: true })
+  const filename = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_')}`
+  await fs.writeFile(path.join(uploadDir, filename), buffer)
+  return `/uploads/${filename}`
+}
+
 async function savePhotos(formData: FormData): Promise<string[]> {
   const photoFiles = formData.getAll('photos') as File[]
   const photoPaths: string[] = []
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-  await fs.mkdir(uploadDir, { recursive: true })
   for (const file of photoFiles) {
     if (file && typeof file === 'object' && file.size > 0) {
-      const bytes = await file.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-      const filename = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_')}`
-      await fs.writeFile(path.join(uploadDir, filename), buffer)
-      photoPaths.push(`/uploads/${filename}`)
+      photoPaths.push(await saveFile(file, 'cats'))
     }
   }
   return photoPaths
@@ -171,13 +179,7 @@ export async function createShelter(formData: FormData): Promise<void> {
   let logo: string | null = null
   for (const file of logoFiles) {
     if (file && typeof file === 'object' && file.size > 0) {
-      const bytes = await file.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-      await fs.mkdir(uploadDir, { recursive: true })
-      const filename = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_')}`
-      await fs.writeFile(path.join(uploadDir, filename), buffer)
-      logo = `/uploads/${filename}`
+      logo = await saveFile(file, 'shelters')
     }
   }
 
@@ -213,13 +215,7 @@ export async function updateShelter(id: string, formData: FormData): Promise<voi
   const logoFiles = formData.getAll('logo') as File[]
   for (const file of logoFiles) {
     if (file && typeof file === 'object' && file.size > 0) {
-      const bytes = await file.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-      await fs.mkdir(uploadDir, { recursive: true })
-      const filename = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_')}`
-      await fs.writeFile(path.join(uploadDir, filename), buffer)
-      logo = `/uploads/${filename}`
+      logo = await saveFile(file, 'shelters')
     }
   }
 
