@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { db } from './turso'
-import { slugify, ageGroupFromMonths } from './utils'
+import { slugify, ageGroupFromMonths, ageTextFromMonths } from './utils'
+import { COLOR_CATEGORIES } from './constants'
 
 async function saveFile(file: File, folder: 'cats' | 'shelters'): Promise<string> {
   if (process.env.CLOUDINARY_CLOUD_NAME) {
@@ -44,14 +45,14 @@ export async function createCat(formData: FormData): Promise<void> {
   const name = String(formData.get('name') ?? '').trim()
   const shelterId = String(formData.get('shelterId') ?? '')
   const sex = String(formData.get('sex') ?? 'hím')
-  const ageText = String(formData.get('ageText') ?? '').trim() || null
   const ageMonthsRaw = String(formData.get('ageMonths') ?? '').trim()
   const ageMonths = ageMonthsRaw ? parseInt(ageMonthsRaw, 10) : null
-  const breed = String(formData.get('breed') ?? '').trim() || null
+  const ageText = ageMonths != null ? ageTextFromMonths(ageMonths) : null
   const breedType = String(formData.get('breedType') ?? 'keverék')
-  const color = String(formData.get('color') ?? '').trim() || null
+  const breed = breedType === 'fajtiszta' ? (String(formData.get('breed') ?? '').trim() || null) : null
   const colorCategory = String(formData.get('colorCategory') ?? '').trim() || null
-  const coatCss = String(formData.get('coatCss') ?? '').trim() || null
+  const color = colorCategory
+  const coatCss = COLOR_CATEGORIES.find(c => c.label === colorCategory)?.css ?? null
   const isNeutered = formData.get('isNeutered') === 'on'
   const isVaccinated = formData.get('isVaccinated') === 'on'
   const isChipped = formData.get('isChipped') === 'on'
@@ -82,14 +83,14 @@ export async function updateCat(id: string, formData: FormData): Promise<void> {
   const name = String(formData.get('name') ?? '').trim()
   const shelterId = String(formData.get('shelterId') ?? '')
   const sex = String(formData.get('sex') ?? 'hím')
-  const ageText = String(formData.get('ageText') ?? '').trim() || null
   const ageMonthsRaw = String(formData.get('ageMonths') ?? '').trim()
   const ageMonths = ageMonthsRaw ? parseInt(ageMonthsRaw, 10) : null
-  const breed = String(formData.get('breed') ?? '').trim() || null
+  const ageText = ageMonths != null ? ageTextFromMonths(ageMonths) : null
   const breedType = String(formData.get('breedType') ?? 'keverék')
-  const color = String(formData.get('color') ?? '').trim() || null
+  const breed = breedType === 'fajtiszta' ? (String(formData.get('breed') ?? '').trim() || null) : null
   const colorCategory = String(formData.get('colorCategory') ?? '').trim() || null
-  const coatCss = String(formData.get('coatCss') ?? '').trim() || null
+  const color = colorCategory
+  const coatCss = COLOR_CATEGORIES.find(c => c.label === colorCategory)?.css ?? null
   const isNeutered = formData.get('isNeutered') === 'on'
   const isVaccinated = formData.get('isVaccinated') === 'on'
   const isChipped = formData.get('isChipped') === 'on'

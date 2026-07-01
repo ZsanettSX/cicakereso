@@ -1,22 +1,26 @@
 'use client'
 
-import { useState } from 'react'
-import { COLOR_CATEGORIES } from '@/lib/constants'
+import { useState, useRef } from 'react'
+import { COLOR_CATEGORIES, PUREBRED_BREEDS } from '@/lib/constants'
+import { ageTextFromMonths } from '@/lib/utils'
+
+const PHOTO_SLOTS = 6
 
 interface Shelter { id: string; name: string }
 interface CatFormData {
-  name?: string; shelterId?: string; sex?: string; ageText?: string; ageMonths?: number | null;
-  breed?: string; breedType?: string; color?: string; colorCategory?: string; coatCss?: string;
-  isNeutered?: boolean; isVaccinated?: boolean; isChipped?: boolean; traits?: string;
-  description?: string; status?: string; existingPhotos?: string[];
+  name?: string; shelterId?: string; sex?: string; ageMonths?: number | null;
+  breed?: string; breedType?: string; colorCategory?: string;
+  isNeutered?: boolean; isVaccinated?: boolean; isChipped?: boolean;
+  traits?: string; description?: string; status?: string; existingPhotos?: string[];
 }
-
 interface CatFormProps {
   shelters: Shelter[]
   action: (formData: FormData) => Promise<void>
   initial?: CatFormData
   submitLabel?: string
 }
+
+type Slot = { kind: 'empty' } | { kind: 'existing'; url: string } | { kind: 'new'; preview: string }
 
 const labelStyle: React.CSSProperties = {
   fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-sm)',
@@ -30,17 +34,61 @@ const inputStyle: React.CSSProperties = {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}><label style={labelStyle}>{label}</label>{children}</div>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <label style={labelStyle}>{label}</label>
+      {children}
+    </div>
+  )
 }
 
 export default function CatForm({ shelters, action, initial = {}, submitLabel = 'Mentés' }: CatFormProps) {
-  const [existingPhotos, setExistingPhotos] = useState<string[]>(initial.existingPhotos ?? [])
+  const [ageMonths, setAgeMonths] = useState<string>(initial.ageMonths != null ? String(initial.ageMonths) : '')
+  const [breedType, setBreedType] = useState(initial.breedType ?? 'keverék')
+  const [breedQuery, setBreedQuery] = useState(initial.breed ?? '')
+  const [selectedBreed, setSelectedBreed] = useState(initial.breed ?? '')
+  const [breedOpen, setBreedOpen] = useState(false)
+
+  const fileRefs = useRef<(HTMLInputElement | null)[]>(Array(PHOTO_SLOTS).fill(null))
+  const [slots, setSlots] = useState<Slot[]>(() => {
+    const existing: Slot[] = (initial.existingPhotos ?? []).slice(0, PHOTO_SLOTS).map(url => ({ kind: 'existing', url }))
+    while (existing.length < PHOTO_SLOTS) existing.push({ kind: 'empty' })
+    return existing
+  })
+
+  const agePreview = ageMonths && !isNaN(parseInt(ageMonths)) ? ageTextFromMonths(parseInt(ageMonths)) : null
+  const filteredBreeds = PUREBRED_BREEDS.filter(b => b.toLowerCase().includes(breedQuery.toLowerCase()))
+
+  const handleSlotClick = (i: number) => {
+    if (slots[i].kind === 'empty') fileRefs.current[i]?.click()
+  }
+
+  const handleFileChange = (i: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const preview = URL.createObjectURL(file)
+    setSlots(s => s.map((slot, j) => j === i ? { kind: 'new', preview } : slot))
+  }
+
+  const handleRemoveSlot = (i: number) => {
+    if (slots[i].kind === 'new' && fileRefs.current[i]) fileRefs.current[i]!.value = ''
+    setSlots(s => s.map((slot, j) => j === i ? { kind: 'empty' } : slot))
+  }
+
+  const handleBreedTypeChange = (val: string) => {
+    setBreedType(val)
+    if (val !== 'fajtiszta') { setSelectedBreed(''); setBreedQuery('') }
+  }
+
+  const handleBreedSelect = (breed: string) => {
+    setSelectedBreed(breed)
+    setBreedQuery(breed)
+    setBreedOpen(false)
+  }
 
   return (
     <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Existing photos hidden inputs */}
-      {existingPhotos.map((p) => <input key={p} type="hidden" name="existingPhotos" value={p} />)}
-
+      {/* Alapadatok */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <Field label="Név *">
           <input type="text" name="name" required defaultValue={initial.name} style={inputStyle} placeholder="pl. Morzsi" />
@@ -53,51 +101,90 @@ export default function CatForm({ shelters, action, initial = {}, submitLabel = 
         </Field>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+      {/* Nem + Kor */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <Field label="Nem *">
           <select name="sex" required defaultValue={initial.sex ?? 'hím'} style={inputStyle}>
             <option value="hím">♂ Hím</option>
             <option value="nőstény">♀ Nőstény</option>
           </select>
         </Field>
-        <Field label="Kor szöveg">
-          <input type="text" name="ageText" defaultValue={initial.ageText ?? ''} style={inputStyle} placeholder="pl. 2 éves" />
-        </Field>
-        <Field label="Kor (hónapban)">
-          <input type="number" name="ageMonths" min={0} max={300} defaultValue={initial.ageMonths ?? ''} style={inputStyle} placeholder="pl. 24" />
-        </Field>
+        <div>
+          <Field label="Kor (hónapban)">
+            <input
+              type="number" name="ageMonths" min={0} max={300}
+              value={ageMonths} onChange={e => setAgeMonths(e.target.value)}
+              style={inputStyle} placeholder="pl. 24"
+            />
+          </Field>
+          {agePreview && (
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', marginTop: 5 }}>
+              → {agePreview}
+            </div>
+          )}
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <Field label="Fajta">
-          <input type="text" name="breed" defaultValue={initial.breed ?? ''} style={inputStyle} placeholder="pl. Európai rövidszőrű" />
-        </Field>
+      {/* Fajta */}
+      <div style={{ display: 'grid', gridTemplateColumns: breedType === 'fajtiszta' ? '1fr 2fr' : '1fr', gap: 16 }}>
         <Field label="Fajtatisztaság">
-          <select name="breedType" defaultValue={initial.breedType ?? 'keverék'} style={inputStyle}>
+          <select name="breedType" value={breedType} onChange={e => handleBreedTypeChange(e.target.value)} style={inputStyle}>
+            <option value="utcai">Utcai</option>
             <option value="keverék">Keverék</option>
             <option value="fajtiszta">Fajtiszta</option>
           </select>
         </Field>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-        <Field label="Szín (megjelenítési név)">
-          <input type="text" name="color" defaultValue={initial.color ?? ''} style={inputStyle} placeholder="pl. Vörös cirmos" />
-        </Field>
-        <Field label="Szín kategória">
-          <select name="colorCategory" defaultValue={initial.colorCategory ?? ''} style={inputStyle}>
-            <option value="">—</option>
-            {COLOR_CATEGORIES.map((c) => <option key={c.label} value={c.label}>{c.label}</option>)}
-          </select>
-        </Field>
-        <Field label="Szín CSS (swatch)">
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input type="text" name="coatCss" defaultValue={initial.coatCss ?? ''} style={{ ...inputStyle, flex: 1 }} placeholder="#d99a5b" />
+        {breedType === 'fajtiszta' && (
+          <div style={{ position: 'relative' }}>
+            <label style={labelStyle}>Fajtiszta fajta</label>
+            <input
+              type="text"
+              placeholder="Keresés a fajtában..."
+              value={breedQuery}
+              onChange={e => { setBreedQuery(e.target.value); setBreedOpen(true) }}
+              onFocus={() => setBreedOpen(true)}
+              onBlur={() => setTimeout(() => setBreedOpen(false), 150)}
+              style={inputStyle}
+              autoComplete="off"
+            />
+            <input type="hidden" name="breed" value={selectedBreed} />
+            {breedOpen && filteredBreeds.length > 0 && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20,
+                background: 'var(--white)', border: '1.5px solid var(--cream-200)',
+                borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)',
+                maxHeight: 220, overflowY: 'auto', marginTop: 2,
+              }}>
+                {filteredBreeds.map(breed => (
+                  <div
+                    key={breed}
+                    onMouseDown={() => handleBreedSelect(breed)}
+                    style={{
+                      padding: '9px 14px', fontFamily: 'var(--font-body)',
+                      fontSize: 'var(--text-sm)', color: 'var(--cocoa-800)', cursor: 'pointer',
+                      background: selectedBreed === breed ? 'var(--cream-100)' : 'transparent',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--cream-100)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = selectedBreed === breed ? 'var(--cream-100)' : 'transparent')}
+                  >
+                    {breed}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </Field>
+        )}
       </div>
 
-      {/* Health */}
+      {/* Szín */}
+      <Field label="Szín kategória">
+        <select name="colorCategory" defaultValue={initial.colorCategory ?? ''} style={inputStyle}>
+          <option value="">—</option>
+          {COLOR_CATEGORIES.map((c) => <option key={c.label} value={c.label}>{c.label}</option>)}
+        </select>
+      </Field>
+
+      {/* Egészségügy */}
       <div>
         <label style={labelStyle}>Egészségügyi adatok</label>
         <div style={{ display: 'flex', gap: 24 }}>
@@ -127,25 +214,61 @@ export default function CatForm({ shelters, action, initial = {}, submitLabel = 
         </select>
       </Field>
 
-      {/* Existing photos */}
-      {existingPhotos.length > 0 && (
-        <div>
-          <label style={labelStyle}>Jelenlegi fotók</label>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            {existingPhotos.map((p) => (
-              <div key={p} style={{ position: 'relative' }}>
-                <img src={p} alt="" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 'var(--radius-md)' }} />
-                <button type="button" onClick={() => setExistingPhotos((ps) => ps.filter((x) => x !== p))} style={{ position: 'absolute', top: -6, right: -6, width: 22, height: 22, borderRadius: '50%', background: 'var(--danger)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-              </div>
-            ))}
-          </div>
+      {/* Fotó feltöltő — 6 slot */}
+      <div>
+        <label style={labelStyle}>Fotók</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          {slots.map((slot, i) => (
+            <div
+              key={i}
+              onClick={() => handleSlotClick(i)}
+              style={{
+                position: 'relative', aspectRatio: '1 / 1',
+                borderRadius: 'var(--radius-md)', overflow: 'hidden',
+                background: 'var(--cream-100)',
+                border: `2px dashed ${slot.kind === 'empty' ? 'var(--cream-300)' : 'transparent'}`,
+                cursor: slot.kind === 'empty' ? 'pointer' : 'default',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'border-color 0.15s',
+              }}
+              onMouseEnter={e => { if (slot.kind === 'empty') e.currentTarget.style.borderColor = 'var(--cream-400)' }}
+              onMouseLeave={e => { if (slot.kind === 'empty') e.currentTarget.style.borderColor = 'var(--cream-300)' }}
+            >
+              {slot.kind === 'empty' ? (
+                <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke="var(--cream-400)" strokeWidth={1.5} strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              ) : (
+                <>
+                  <img
+                    src={slot.kind === 'existing' ? slot.url : (slot as { kind: 'new'; preview: string }).preview}
+                    alt=""
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={e => { e.stopPropagation(); handleRemoveSlot(i) }}
+                    style={{
+                      position: 'absolute', top: 6, right: 6,
+                      width: 26, height: 26, borderRadius: '50%',
+                      background: 'rgba(0,0,0,0.55)', color: '#fff',
+                      border: 'none', cursor: 'pointer', fontSize: 17,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1,
+                    }}
+                  >×</button>
+                  {slot.kind === 'existing' && <input type="hidden" name="existingPhotos" value={slot.url} />}
+                </>
+              )}
+              <input
+                type="file" name="photos" accept="image/*"
+                style={{ display: 'none' }}
+                ref={el => { fileRefs.current[i] = el }}
+                onChange={e => handleFileChange(i, e)}
+              />
+            </div>
+          ))}
         </div>
-      )}
-
-      <Field label="Fotók feltöltése">
-        <input type="file" name="photos" multiple accept="image/*" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)' }} />
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', margin: '6px 0 0' }}>JPEG, PNG, WebP — több fájl egyszerre is kijelölhető.</p>
-      </Field>
+      </div>
 
       <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
         <button type="submit" style={{ background: 'var(--forest-700)', color: 'var(--cream-50)', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-md)', padding: '12px 28px', borderRadius: 'var(--radius-pill)', border: 'none', cursor: 'pointer' }}>

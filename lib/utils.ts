@@ -17,6 +17,14 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+export function ageTextFromMonths(months: number): string {
+  if (months < 1) return 'Kevesebb mint 1 hónapos'
+  if (months < 12) return `${months} hónapos`
+  const rounded = Math.round((months / 12) * 2) / 2
+  if (rounded % 1 === 0) return `${Math.floor(rounded)} éves`
+  return `${Math.floor(rounded)},5 éves`
+}
+
 export function ageGroupFromMonths(months: number): string {
   if (months < 12) return 'Kölyök'
   if (months < 24) return 'Fiatal'

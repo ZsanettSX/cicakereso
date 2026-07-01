@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { db } from '@/lib/turso'
+import { ageTextFromMonths } from '@/lib/utils'
 
 export default async function AdminDashboard() {
   const [catCount, shelterCount, available, reserved, urgent, recentCats] = await Promise.all([
@@ -49,7 +50,7 @@ export default async function AdminDashboard() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)' }}>
           <thead>
             <tr style={{ background: 'var(--cream-50)' }}>
-              {['Név', 'Menhely', 'Státusz', 'Feltöltve', 'Szerkesztés'].map((h) => (
+              {['Név', 'Menhely', 'Kor', 'Státusz', 'Feltöltve', 'Szerkesztés'].map((h) => (
                 <th key={h} style={{ textAlign: 'left', padding: '10px 16px', fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--text-muted)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
               ))}
             </tr>
@@ -57,8 +58,16 @@ export default async function AdminDashboard() {
           <tbody>
             {recentCats.map((cat) => (
               <tr key={cat.id} style={{ borderTop: '1px solid var(--cream-200)' }}>
-                <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--cocoa-800)' }}>{cat.name}</td>
+                <td style={{ padding: '12px 16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {(() => { try { const p = JSON.parse(cat.photos)[0]; return p ? <img src={p} alt="" style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} /> : <div style={{ width: 36, height: 36, background: 'var(--cream-100)', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} /> } catch { return <div style={{ width: 36, height: 36, background: 'var(--cream-100)', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} /> } })()}
+                    <span style={{ fontWeight: 600, color: 'var(--cocoa-800)' }}>{cat.name}</span>
+                  </div>
+                </td>
                 <td style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>{cat.shelter.name}</td>
+                <td style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>
+                  {cat.ageText ?? (cat.ageMonths != null ? ageTextFromMonths(cat.ageMonths) : '—')}
+                </td>
                 <td style={{ padding: '12px 16px' }}>
                   <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-pill)', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-display)', fontWeight: 600, background: cat.status === 'available' ? 'var(--success-bg)' : cat.status === 'urgent' ? 'var(--warning-bg)' : 'var(--cream-100)', color: cat.status === 'available' ? 'var(--success)' : cat.status === 'urgent' ? 'var(--warning)' : 'var(--text-muted)' }}>
                     {cat.status}
