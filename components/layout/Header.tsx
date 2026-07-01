@@ -52,7 +52,7 @@ export default function Header() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        background: 'rgba(255,252,247,0.97)',
+        background: 'rgba(252,246,237,0.96)',
         backdropFilter: 'blur(8px)',
         borderBottom: '1px solid var(--cream-200)',
       }}
@@ -60,7 +60,7 @@ export default function Header() {
       <div
         className="ck-container"
         style={{
-          height: 54,
+          height: 60,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',

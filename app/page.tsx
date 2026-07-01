@@ -62,7 +62,7 @@ export default async function HomePage() {
 
       {/* NEWEST CATS CAROUSEL */}
       {newest.length > 0 && (
-        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '24px 8px 0' }}>
+        <section style={{ padding: '24px 0 0' }}>
           <CatCarousel cats={newest} />
         </section>
       )}
