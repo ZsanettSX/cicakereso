@@ -31,6 +31,7 @@ export default function Header() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const [hovered, setHovered] = useState<string | null>(null)
 
   const isActive = (href: string) => pathname.startsWith(href)
@@ -102,43 +103,70 @@ export default function Header() {
           >
             Adományozás
           </span>
-          <div
-            style={{ position: 'relative' }}
-            onMouseEnter={() => { setServicesOpen(true); setHovered('szolgaltatasok') }}
-            onMouseLeave={() => { setServicesOpen(false); setHovered(null) }}
-          >
-            <span style={{ ...linkStyle('szolgaltatasok', false), cursor: 'default' }}>Szolgáltatások ▾</span>
-            {servicesOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  background: 'var(--white)',
-                  borderRadius: 'var(--radius-md)',
-                  boxShadow: 'var(--shadow-lg)',
-                  padding: 'var(--space-3)',
-                  minWidth: 240,
-                  border: '1px solid var(--cream-200)',
-                }}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setServicesOpen((o) => !o)}
+              onMouseEnter={() => setHovered('szolgaltatasok')}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                ...linkStyle('szolgaltatasok', servicesOpen),
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '0.3rem 0 2px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              Szolgáltatások
+              <svg
+                width={12} height={12} viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"
+                style={{ transition: 'transform 0.2s', transform: servicesOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
               >
-                {SERVICES.map((s) => (
-                  <a
-                    key={s}
-                    href="#"
-                    style={{
-                      display: 'block',
-                      padding: '0.5rem 0.75rem',
-                      borderRadius: 'var(--radius-sm)',
-                      color: 'var(--cocoa-700)',
-                      textDecoration: 'none',
-                      fontFamily: 'var(--font-body)',
-                    }}
-                  >
-                    {s}
-                  </a>
-                ))}
-              </div>
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+            {servicesOpen && (
+              <>
+                <div
+                  onClick={() => setServicesOpen(false)}
+                  style={{ position: 'fixed', inset: 0, zIndex: 50 }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)',
+                    left: 0,
+                    background: 'var(--white)',
+                    borderRadius: 'var(--radius-md)',
+                    boxShadow: 'var(--shadow-lg)',
+                    padding: 'var(--space-3)',
+                    minWidth: 240,
+                    border: '1px solid var(--cream-200)',
+                    zIndex: 51,
+                  }}
+                >
+                  {SERVICES.map((s) => (
+                    <a
+                      key={s}
+                      href="#"
+                      onClick={() => setServicesOpen(false)}
+                      style={{
+                        display: 'block',
+                        padding: '0.5rem 0.75rem',
+                        borderRadius: 'var(--radius-sm)',
+                        color: 'var(--cocoa-700)',
+                        textDecoration: 'none',
+                        fontFamily: 'var(--font-body)',
+                      }}
+                    >
+                      {s}
+                    </a>
+                  ))}
+                </div>
+              </>
             )}
           </div>
           <span
@@ -263,7 +291,7 @@ export default function Header() {
                 </Link>
               ))}
               <div style={{ borderTop: '1px solid var(--cream-200)', margin: '4px 0' }} />
-              {['Adományozás', 'Szolgáltatások', 'Blog'].map((label) => (
+              {['Adományozás', 'Blog'].map((label) => (
                 <span
                   key={label}
                   style={{
@@ -277,6 +305,55 @@ export default function Header() {
                   {label}
                 </span>
               ))}
+              <div>
+                <button
+                  onClick={() => setMobileServicesOpen((o) => !o)}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '16px 20px',
+                    background: mobileServicesOpen ? 'var(--cream-100)' : 'var(--white)',
+                    borderRadius: mobileServicesOpen ? 'var(--radius-lg) var(--radius-lg) 0 0' : 'var(--radius-lg)',
+                    border: '1.5px solid var(--cream-200)',
+                    borderBottom: mobileServicesOpen ? '1px solid var(--cream-200)' : undefined,
+                    fontFamily: 'var(--font-display)', fontWeight: 700,
+                    fontSize: 'var(--text-lg)', color: 'var(--cocoa-800)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Szolgáltatások
+                  <svg
+                    width={16} height={16} viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"
+                    style={{ transition: 'transform 0.2s', transform: mobileServicesOpen ? 'rotate(180deg)' : 'rotate(0deg)', color: 'var(--cocoa-300)' }}
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                {mobileServicesOpen && (
+                  <div style={{
+                    background: 'var(--white)',
+                    border: '1.5px solid var(--cream-200)',
+                    borderTop: 'none',
+                    borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
+                    overflow: 'hidden',
+                  }}>
+                    {SERVICES.map((s) => (
+                      <a
+                        key={s}
+                        href="#"
+                        style={{
+                          display: 'block', padding: '13px 20px',
+                          color: 'var(--cocoa-700)', textDecoration: 'none',
+                          fontFamily: 'var(--font-body)', fontSize: 'var(--text-base)',
+                          borderTop: '1px solid var(--cream-100)',
+                        }}
+                      >
+                        {s}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             </nav>
 
             {/* Bottom: Kedvenceim */}
