@@ -86,6 +86,8 @@ export default function CatRowCarousel({ cats }: { cats: CatCardData[] }) {
             scrollSnapType: 'x mandatory',
             WebkitOverflowScrolling: 'touch',
             paddingBottom: 8,
+            paddingLeft: GAP,
+            paddingRight: GAP,
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
           }}
