@@ -1,26 +1,18 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 import { parsePhotos, parseTraits } from '@/lib/utils'
 
 export async function GET(_: Request, { params }: { params: { slug: string } }) {
-  const cat = await prisma.cat.findUnique({
-    where: { slug: params.slug },
-    include: { shelter: true },
-  })
+  const cat = await db.cat.findUniqueWithShelter({ slug: params.slug })
   if (!cat) return NextResponse.json(null, { status: 404 })
 
-  const related = await prisma.cat.findMany({
-    where: { shelterId: cat.shelterId, id: { not: cat.id }, status: { not: 'adopted' } },
-    include: { shelter: true },
+  const related = await db.cat.findMany({
+    where: { shelterId: cat.shelterId, idNot: cat.id, statusNot: 'adopted' },
     take: 4,
   })
 
   return NextResponse.json({
-    cat: {
-      ...cat,
-      photos: parsePhotos(cat.photos),
-      traits: parseTraits(cat.traits),
-    },
+    cat: { ...cat, photos: parsePhotos(cat.photos), traits: parseTraits(cat.traits) },
     related: related.map((r) => ({
       id: r.id, slug: r.slug, name: r.name, photos: r.photos,
       ageText: r.ageText, sex: r.sex, breed: r.breed,

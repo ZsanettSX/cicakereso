@@ -1,15 +1,12 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 import { deleteShelter } from '@/lib/actions'
 import DeleteButton from '@/components/admin/DeleteButton'
 
 export default async function AdminMenhelyekPage() {
-  const shelters = await prisma.shelter.findMany({
-    include: { _count: { select: { cats: true } } },
-    orderBy: { name: 'asc' },
-  })
+  const shelters = await db.shelter.findMany({ allCats: true })
 
   return (
     <div>
@@ -50,7 +47,7 @@ export default async function AdminMenhelyekPage() {
                 <td style={{ padding: '12px 14px', color: 'var(--text-muted)' }}>{shelter.county ?? '—'}</td>
                 <td style={{ padding: '12px 14px' }}>
                   <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-pill)', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-display)', fontWeight: 600, background: 'var(--sage-100)', color: 'var(--forest-700)' }}>
-                    {shelter._count.cats} cica
+                    {shelter.catCount} cica
                   </span>
                 </td>
                 <td style={{ padding: '12px 14px', color: 'var(--text-muted)' }}>

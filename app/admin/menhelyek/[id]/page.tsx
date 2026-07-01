@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic'
 
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 import { updateShelter } from '@/lib/actions'
 import ShelterForm from '@/components/admin/ShelterForm'
 import { notFound } from 'next/navigation'
 
 export default async function EditMenhelyPage({ params }: { params: { id: string } }) {
-  const shelter = await prisma.shelter.findUnique({ where: { id: params.id } })
+  const shelter = await db.shelter.findUnique({ id: params.id })
   if (!shelter) notFound()
 
   const action = async (formData: FormData) => {

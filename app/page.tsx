@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 import { parseTraits } from '@/lib/utils'
 import { shuffle } from '@/lib/utils'
 import CatCarousel from '@/components/cats/CatCarousel'
@@ -27,13 +27,9 @@ function toCatCard(cat: any): CatCardData {
 
 export default async function HomePage() {
   const [allCats, catCount, shelterCount] = await Promise.all([
-    prisma.cat.findMany({
-      where: { status: { not: 'adopted' } },
-      include: { shelter: true },
-      orderBy: { uploadedAt: 'desc' },
-    }),
-    prisma.cat.count({ where: { status: 'available' } }),
-    prisma.shelter.count(),
+    db.cat.findMany({ where: { statusNot: 'adopted' }, orderBy: 'c.uploadedAt DESC' }),
+    db.cat.count({ status: 'available' }),
+    db.shelter.count(),
   ])
 
   const newest = allCats.slice(0, 15).map(toCatCard)

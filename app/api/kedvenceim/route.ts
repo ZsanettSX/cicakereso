@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 
 export async function GET(req: NextRequest) {
   const slugs = req.nextUrl.searchParams.get('slugs')?.split(',').filter(Boolean) ?? []
   if (slugs.length === 0) return NextResponse.json([])
 
-  const cats = await prisma.cat.findMany({
-    where: { slug: { in: slugs } },
-    include: { shelter: true },
-  })
+  const cats = await db.cat.findManyBySlugs(slugs)
 
   return NextResponse.json(
     cats.map((c) => ({

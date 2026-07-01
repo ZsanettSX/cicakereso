@@ -1,16 +1,16 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 
 export default async function AdminDashboard() {
   const [catCount, shelterCount, available, reserved, urgent, recentCats] = await Promise.all([
-    prisma.cat.count(),
-    prisma.shelter.count(),
-    prisma.cat.count({ where: { status: 'available' } }),
-    prisma.cat.count({ where: { status: 'reserved' } }),
-    prisma.cat.count({ where: { status: 'urgent' } }),
-    prisma.cat.findMany({ take: 5, orderBy: { uploadedAt: 'desc' }, include: { shelter: true } }),
+    db.cat.count(),
+    db.shelter.count(),
+    db.cat.count({ status: 'available' }),
+    db.cat.count({ status: 'reserved' }),
+    db.cat.count({ status: 'urgent' }),
+    db.cat.findMany({ orderBy: 'c.uploadedAt DESC', take: 5 }),
   ])
 
   const statCard = (label: string, value: number | string, color = 'var(--forest-700)') => (

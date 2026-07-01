@@ -1,13 +1,10 @@
 export const dynamic = 'force-dynamic'
 
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 import ShelterCard from '@/components/shelters/ShelterCard'
 
 export default async function MenhelyekPage() {
-  const shelters = await prisma.shelter.findMany({
-    include: { _count: { select: { cats: { where: { status: { not: 'adopted' } } } } } },
-    orderBy: { name: 'asc' },
-  })
+  const shelters = await db.shelter.findMany()
 
   return (
     <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '40px 28px 64px' }}>
@@ -34,7 +31,7 @@ export default async function MenhelyekPage() {
               description={s.description}
               county={s.county}
               address={s.address}
-              catCount={s._count.cats}
+              catCount={s.catCount}
             />
           ))}
         </div>

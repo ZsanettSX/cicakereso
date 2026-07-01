@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
+import type { CatWithShelter } from '@/lib/turso'
 import { shuffle } from '@/lib/utils'
 import CatGrid from '@/components/cats/CatGrid'
 import CatFilters from '@/components/cats/CatFilters'
 import type { CatCardData } from '@/components/cats/CatCard'
-import { Prisma } from '@prisma/client'
 
 interface SearchParams {
   nev?: string
@@ -18,19 +18,12 @@ interface SearchParams {
   rendez?: string
 }
 
-function toCatCard(cat: Prisma.CatGetPayload<{ include: { shelter: true } }>): CatCardData {
+function toCatCard(cat: CatWithShelter): CatCardData {
   return {
-    id: cat.id,
-    slug: cat.slug,
-    name: cat.name,
-    photos: cat.photos,
-    ageText: cat.ageText,
-    sex: cat.sex,
-    breed: cat.breed,
-    coatCss: cat.coatCss,
-    colorCategory: cat.colorCategory,
-    status: cat.status,
-    traits: cat.traits,
+    id: cat.id, slug: cat.slug, name: cat.name, photos: cat.photos,
+    ageText: cat.ageText, sex: cat.sex, breed: cat.breed,
+    coatCss: cat.coatCss, colorCategory: cat.colorCategory,
+    status: cat.status, traits: cat.traits,
     shelter: { name: cat.shelter.name, county: cat.shelter.county },
   }
 }
@@ -38,40 +31,35 @@ function toCatCard(cat: Prisma.CatGetPayload<{ include: { shelter: true } }>): C
 async function CatListContent({ searchParams }: { searchParams: SearchParams }) {
   const { nev, nem, kor, szin, fajta, megye, rendez } = searchParams
 
-  const where: Prisma.CatWhereInput = { status: { not: 'adopted' } }
-
-  if (nev) where.name = { contains: nev }
-  if (nem) where.sex = nem
-  if (kor) where.ageGroup = kor
-
   const szinArr = szin ? szin.split(',').filter(Boolean) : []
-  if (szinArr.length > 0) where.colorCategory = { in: szinArr }
-
   const fajtaArr = fajta ? fajta.split(',').filter(Boolean) : []
-  if (fajtaArr.length > 0) where.breedType = { in: fajtaArr }
-
   const megyeArr = megye ? megye.split(',').filter(Boolean) : []
-  if (megyeArr.length > 0) where.shelter = { county: { in: megyeArr } }
 
-  let orderBy: Prisma.CatOrderByWithRelationInput | undefined
+  let orderBy = 'c.uploadedAt DESC'
   switch (rendez) {
-    case 'legujabb': orderBy = { uploadedAt: 'desc' }; break
-    case 'legregibb': orderBy = { uploadedAt: 'asc' }; break
-    case 'legfiatalabb': orderBy = { ageMonths: 'asc' }; break
-    case 'legidosebb': orderBy = { ageMonths: 'desc' }; break
-    case 'nev': orderBy = { name: 'asc' }; break
-    default: orderBy = { uploadedAt: 'desc' }
+    case 'legujabb': orderBy = 'c.uploadedAt DESC'; break
+    case 'legregibb': orderBy = 'c.uploadedAt ASC'; break
+    case 'legfiatalabb': orderBy = 'c.ageMonths ASC'; break
+    case 'legidosebb': orderBy = 'c.ageMonths DESC'; break
+    case 'nev': orderBy = 'c.name ASC'; break
   }
 
-  const cats = await prisma.cat.findMany({
-    where,
-    include: { shelter: true },
+  const cats = await db.cat.findMany({
+    where: {
+      statusNot: 'adopted',
+      name: nev,
+      sex: nem,
+      ageGroup: kor,
+      colorCategory: szinArr.length ? szinArr : undefined,
+      breedType: fajtaArr.length ? fajtaArr : undefined,
+      shelterCounty: megyeArr.length ? megyeArr : undefined,
+    },
     orderBy,
   })
 
   const result = rendez === 'veletlen' || !rendez ? shuffle(cats) : cats
   const cards = result.map(toCatCard)
-  const totalCount = await prisma.cat.count({ where: { status: { not: 'adopted' } } })
+  const totalCount = await db.cat.count({ statusNot: 'adopted' })
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 28, alignItems: 'start' }} className="ck-browse-layout">

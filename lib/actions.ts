@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { prisma } from './db'
+import { db } from './turso'
 import { slugify, ageGroupFromMonths } from './utils'
 
 async function saveFile(file: File, folder: 'cats' | 'shelters'): Promise<string> {
@@ -33,10 +33,11 @@ async function savePhotos(formData: FormData): Promise<string[]> {
 }
 
 function parseTraitsInput(raw: string): string[] {
-  return raw
-    .split(',')
-    .map((t) => t.trim())
-    .filter(Boolean)
+  return raw.split(',').map((t) => t.trim()).filter(Boolean)
+}
+
+function newId(): string {
+  return crypto.randomUUID().replace(/-/g, '')
 }
 
 export async function createCat(formData: FormData): Promise<void> {
@@ -57,33 +58,15 @@ export async function createCat(formData: FormData): Promise<void> {
   const traits = parseTraitsInput(String(formData.get('traits') ?? ''))
   const description = String(formData.get('description') ?? '').trim() || null
   const status = String(formData.get('status') ?? 'available')
-
   const ageGroup = ageMonths != null ? ageGroupFromMonths(ageMonths) : null
   const photoPaths = await savePhotos(formData)
   const slug = `${slugify(name)}-${Math.random().toString(36).slice(2, 7)}`
 
-  await prisma.cat.create({
-    data: {
-      slug,
-      name,
-      photos: JSON.stringify(photoPaths),
-      ageMonths,
-      ageText,
-      ageGroup,
-      breed,
-      breedType,
-      color,
-      colorCategory,
-      coatCss,
-      sex,
-      isNeutered,
-      isVaccinated,
-      isChipped,
-      traits: JSON.stringify(traits),
-      description,
-      shelterId,
-      status,
-    },
+  await db.cat.create({
+    id: newId(), slug, name, photos: JSON.stringify(photoPaths),
+    ageMonths, ageText, ageGroup, breed, breedType, color, colorCategory, coatCss,
+    sex, isNeutered, isVaccinated, isChipped, traits: JSON.stringify(traits),
+    description, shelterId, status,
   })
 
   revalidatePath('/cicak')
@@ -93,7 +76,7 @@ export async function createCat(formData: FormData): Promise<void> {
 }
 
 export async function updateCat(id: string, formData: FormData): Promise<void> {
-  const existing = await prisma.cat.findUnique({ where: { id } })
+  const existing = await db.cat.findUnique({ id })
   if (!existing) redirect('/admin/cicak')
 
   const name = String(formData.get('name') ?? '').trim()
@@ -113,36 +96,16 @@ export async function updateCat(id: string, formData: FormData): Promise<void> {
   const traits = parseTraitsInput(String(formData.get('traits') ?? ''))
   const description = String(formData.get('description') ?? '').trim() || null
   const status = String(formData.get('status') ?? 'available')
-
   const ageGroup = ageMonths != null ? ageGroupFromMonths(ageMonths) : null
-
-  // keep existing photos that were not removed
   const keptPhotos = formData.getAll('existingPhotos').map(String).filter(Boolean)
   const newPhotos = await savePhotos(formData)
   const photos = [...keptPhotos, ...newPhotos]
 
-  await prisma.cat.update({
-    where: { id },
-    data: {
-      name,
-      photos: JSON.stringify(photos),
-      ageMonths,
-      ageText,
-      ageGroup,
-      breed,
-      breedType,
-      color,
-      colorCategory,
-      coatCss,
-      sex,
-      isNeutered,
-      isVaccinated,
-      isChipped,
-      traits: JSON.stringify(traits),
-      description,
-      shelterId,
-      status,
-    },
+  await db.cat.update(id, {
+    name, photos: JSON.stringify(photos), ageMonths, ageText, ageGroup,
+    breed, breedType, color, colorCategory, coatCss, sex,
+    isNeutered, isVaccinated, isChipped, traits: JSON.stringify(traits),
+    description, shelterId, status,
   })
 
   revalidatePath('/cicak')
@@ -153,9 +116,7 @@ export async function updateCat(id: string, formData: FormData): Promise<void> {
 
 export async function deleteCat(formData: FormData): Promise<void> {
   const id = String(formData.get('id') ?? '')
-  if (id) {
-    await prisma.cat.delete({ where: { id } })
-  }
+  if (id) await db.cat.delete(id)
   revalidatePath('/cicak')
   revalidatePath('/')
   revalidatePath('/admin/cicak')
@@ -184,10 +145,7 @@ export async function createShelter(formData: FormData): Promise<void> {
   }
 
   const slug = `${slugify(name)}-${Math.random().toString(36).slice(2, 6)}`
-
-  await prisma.shelter.create({
-    data: { slug, name, county, address, phone, email, facebook, website, lat, lng, description, logo },
-  })
+  await db.shelter.create({ id: newId(), slug, name, county, address, phone, email, facebook, website, lat, lng, description, logo })
 
   revalidatePath('/menhelyek')
   revalidatePath('/admin/menhelyek')
@@ -195,7 +153,7 @@ export async function createShelter(formData: FormData): Promise<void> {
 }
 
 export async function updateShelter(id: string, formData: FormData): Promise<void> {
-  const existing = await prisma.shelter.findUnique({ where: { id } })
+  const existing = await db.shelter.findUnique({ id })
   if (!existing) redirect('/admin/menhelyek')
 
   const name = String(formData.get('name') ?? '').trim()
@@ -219,10 +177,7 @@ export async function updateShelter(id: string, formData: FormData): Promise<voi
     }
   }
 
-  await prisma.shelter.update({
-    where: { id },
-    data: { name, county, address, phone, email, facebook, website, lat, lng, description, logo },
-  })
+  await db.shelter.update(id, { name, logo, county, address, phone, email, facebook, website, lat, lng, description })
 
   revalidatePath('/menhelyek')
   revalidatePath('/admin/menhelyek')
@@ -232,10 +187,8 @@ export async function updateShelter(id: string, formData: FormData): Promise<voi
 export async function deleteShelter(formData: FormData): Promise<void> {
   const id = String(formData.get('id') ?? '')
   if (id) {
-    const count = await prisma.cat.count({ where: { shelterId: id } })
-    if (count === 0) {
-      await prisma.shelter.delete({ where: { id } })
-    }
+    const cats = await db.cat.findMany({ where: { shelterId: id }, take: 1 })
+    if (cats.length === 0) await db.shelter.delete(id)
   }
   revalidatePath('/menhelyek')
   revalidatePath('/admin/menhelyek')

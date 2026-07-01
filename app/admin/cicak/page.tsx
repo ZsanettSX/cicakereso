@@ -1,15 +1,12 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 import { deleteCat } from '@/lib/actions'
 import DeleteButton from '@/components/admin/DeleteButton'
 
 export default async function AdminCicakPage() {
-  const cats = await prisma.cat.findMany({
-    include: { shelter: true },
-    orderBy: { uploadedAt: 'desc' },
-  })
+  const cats = await db.cat.findMany({ orderBy: 'c.uploadedAt DESC' })
 
   return (
     <div>

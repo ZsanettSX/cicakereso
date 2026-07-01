@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 import { updateCat } from '@/lib/actions'
 import CatForm from '@/components/admin/CatForm'
 import { notFound } from 'next/navigation'
@@ -8,8 +8,8 @@ import { parsePhotos, parseTraits } from '@/lib/utils'
 
 export default async function EditCicaPage({ params }: { params: { id: string } }) {
   const [cat, shelters] = await Promise.all([
-    prisma.cat.findUnique({ where: { id: params.id } }),
-    prisma.shelter.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } }),
+    db.cat.findUnique({ id: params.id }),
+    db.shelter.findManyForSelect(),
   ])
 
   if (!cat) notFound()

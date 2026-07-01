@@ -2,12 +2,12 @@ export const dynamic = 'force-dynamic'
 
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
+import type { CatWithShelter } from '@/lib/turso'
 import CatGrid from '@/components/cats/CatGrid'
 import type { CatCardData } from '@/components/cats/CatCard'
-import { Prisma } from '@prisma/client'
 
-function toCatCard(cat: Prisma.CatGetPayload<{ include: { shelter: true } }>): CatCardData {
+function toCatCard(cat: CatWithShelter): CatCardData {
   return {
     id: cat.id, slug: cat.slug, name: cat.name, photos: cat.photos,
     ageText: cat.ageText, sex: cat.sex, breed: cat.breed,
@@ -31,19 +31,8 @@ function ContactItem({ icon, label, href, children }: { icon: React.ReactNode; l
 }
 
 export default async function MenhelyProfilePage({ params }: { params: { id: string } }) {
-  const shelter = await prisma.shelter.findUnique({
-    where: { slug: params.id },
-    include: {
-      cats: {
-        where: { status: { not: 'adopted' } },
-        include: { shelter: true },
-        orderBy: { uploadedAt: 'desc' },
-      },
-    },
-  })
-
+  const shelter = await db.shelter.findUniqueWithCats(params.id)
   if (!shelter) notFound()
-
   const cats = shelter.cats.map(toCatCard)
 
   return (

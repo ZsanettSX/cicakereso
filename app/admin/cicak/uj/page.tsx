@@ -1,11 +1,11 @@
 export const dynamic = 'force-dynamic'
 
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/turso'
 import { createCat } from '@/lib/actions'
 import CatForm from '@/components/admin/CatForm'
 
 export default async function UjCicaPage() {
-  const shelters = await prisma.shelter.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } })
+  const shelters = await db.shelter.findManyForSelect()
 
   return (
     <div>
