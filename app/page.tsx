@@ -34,6 +34,8 @@ export default async function HomePage() {
 
   const newest = allCats.slice(0, 15).map(toCatCard)
   const kolykoks = allCats.filter((c) => c.ageGroup === 'Kölyök').slice(0, 8).map(toCatCard)
+  const fiatals = allCats.filter((c) => c.ageGroup === 'Fiatal').slice(0, 8).map(toCatCard)
+  const felnottek = allCats.filter((c) => c.ageGroup === 'Felnőtt').slice(0, 8).map(toCatCard)
   const idosek = allCats.filter((c) => c.ageGroup === 'Idős').slice(0, 8).map(toCatCard)
 
   const steps = [
@@ -103,6 +105,38 @@ export default async function HomePage() {
             </Link>
           </div>
           <CatRowCarousel cats={kolykoks} />
+        </section>
+      )}
+
+      {/* FIATAL CICÁK */}
+      {fiatals.length > 0 && (
+        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '56px 0 0' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24, padding: '0 28px' }}>
+            <div>
+              <p className="ck-eyebrow">1–3 éves</p>
+              <h2 style={{ margin: '6px 0 0' }}>Fiatal szőrmókáink</h2>
+            </div>
+            <Link href="/cicak?kor=Fiatal" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--forest-700)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--text-sm)' }}>
+              Összes fiatal <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </Link>
+          </div>
+          <CatRowCarousel cats={fiatals} />
+        </section>
+      )}
+
+      {/* FELNŐTT CICÁK */}
+      {felnottek.length > 0 && (
+        <section style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '56px 0 0' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24, padding: '0 28px' }}>
+            <div>
+              <p className="ck-eyebrow">4–7 éves</p>
+              <h2 style={{ margin: '6px 0 0' }}>Felnőtt cicáink</h2>
+            </div>
+            <Link href="/cicak?kor=Felnőtt" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--forest-700)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--text-sm)' }}>
+              Összes felnőtt <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </Link>
+          </div>
+          <CatRowCarousel cats={felnottek} />
         </section>
       )}
 
