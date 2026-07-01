@@ -38,7 +38,7 @@ export default function Header() {
   const linkStyle = (href: string, active: boolean) => ({
     fontFamily: 'var(--font-display)',
     fontWeight: 600,
-    fontSize: 'var(--text-sm)',
+    fontSize: 'var(--text-base)',
     color: active ? 'var(--camel-500)' : 'var(--cocoa-700)',
     textDecoration: 'none',
     padding: '0.3rem 0 2px',
