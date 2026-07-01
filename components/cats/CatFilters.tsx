@@ -103,7 +103,14 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--cocoa-800)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--forest-700)" strokeWidth={2.2} strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="12" y1="18" x2="12" y2="18" /></svg>
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--forest-700)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <circle cx="8" cy="6" r="2" fill="var(--forest-700)" stroke="none" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <circle cx="16" cy="12" r="2" fill="var(--forest-700)" stroke="none" />
+              <line x1="4" y1="18" x2="20" y2="18" />
+              <circle cx="10" cy="18" r="2" fill="var(--forest-700)" stroke="none" />
+            </svg>
           Szűrők
         </span>
         {hasFilters && (
@@ -282,19 +289,19 @@ export default function CatFilters({ totalCount }: { totalCount: number }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 10,
-            padding: '12px 24px',
+            padding: '10px 20px',
             borderRadius: 'var(--radius-pill)',
             border: `2px solid ${hasFilters ? 'var(--forest-700)' : 'var(--cream-200)'}`,
             background: hasFilters ? 'var(--sage-100)' : 'var(--white)',
             color: hasFilters ? 'var(--forest-700)' : 'var(--cocoa-700)',
             fontFamily: 'var(--font-display)',
             fontWeight: 700,
-            fontSize: 'var(--text-md)',
+            fontSize: 'var(--text-base)',
             cursor: 'pointer',
             boxShadow: 'var(--shadow-sm)',
           }}
         >
-          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <line x1="4" y1="6" x2="20" y2="6" />
             <circle cx="8" cy="6" r="2" fill="currentColor" stroke="none" />
             <line x1="4" y1="12" x2="20" y2="12" />
