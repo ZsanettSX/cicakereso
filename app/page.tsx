@@ -130,7 +130,7 @@ export default async function HomePage() {
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
             <div>
               <p className="ck-eyebrow">4–7 éves</p>
-              <h2 style={{ margin: '2px 0 0' }}>Felnőtt cicáink</h2>
+              <h2 style={{ margin: '2px 0 0' }}>Felnőtt bundásaink</h2>
             </div>
             <Link href="/cicak?kor=Felnőtt" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--forest-700)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--text-sm)' }}>
               Összes felnőtt <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
