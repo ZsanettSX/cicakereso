@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
+import { PrismaLibSql } from '@prisma/adapter-libsql'
 
 export const dynamic = 'force-dynamic'
 
@@ -6,35 +8,26 @@ export async function GET() {
   const tursoUrl = process.env.TURSO_DATABASE_URL ?? ''
   const tursoToken = process.env.TURSO_AUTH_TOKEN ?? ''
 
-  // Show last 30 chars of URL so we can verify which DB is targeted
   const info: Record<string, unknown> = {
     turso_url_tail: tursoUrl.slice(-40),
     turso_token_set: !!tursoToken,
     node_env: process.env.NODE_ENV,
   }
 
-  // Direct HTTP call to Turso — bypasses Prisma and libsql adapter entirely
-  const httpUrl = tursoUrl.replace('libsql://', 'https://')
+  // Test fresh Prisma client (not the singleton from lib/db)
   try {
-    const res = await fetch(`${httpUrl}/v2/pipeline`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${tursoToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        requests: [
-          { type: 'execute', stmt: { sql: "SELECT name FROM sqlite_master WHERE type='table'", args: [] } },
-          { type: 'close' },
-        ],
-      }),
-    })
-    const data = await res.json()
-    info.http_status = res.status
-    const rows = data?.results?.[0]?.response?.result?.rows ?? []
-    info.tables_via_http = rows.map((r: any[]) => r[0]?.value ?? r[0])
+    const adapter = new PrismaLibSql({ url: tursoUrl, authToken: tursoToken })
+    const client = new PrismaClient({ adapter } as any)
+    const tables = await client.$queryRaw<{ name: string }[]>`SELECT name FROM sqlite_master WHERE type='table'`
+    info.prisma_tables = tables.map((t) => t.name)
+    const catCount = await client.cat.count()
+    info.cat_count = catCount
+    info.prisma_status = 'OK'
+    await client.$disconnect()
   } catch (e: any) {
-    info.http_error = e?.message
+    info.prisma_status = 'ERROR'
+    info.prisma_error = e?.message
+    info.prisma_stack = e?.stack?.split('\n').slice(0, 5).join(' | ')
   }
 
   return NextResponse.json(info)
