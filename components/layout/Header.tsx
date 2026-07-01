@@ -206,14 +206,14 @@ export default function Header() {
               key={item.href}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              style={linkStyle(isActive(item.href))}
+              style={linkStyle(item.href, isActive(item.href))}
             >
               {item.label}
             </Link>
           ))}
-          <span style={{ ...linkStyle(false), color: 'var(--text-muted)' }}>Adományozás</span>
-          <span style={{ ...linkStyle(false), color: 'var(--text-muted)' }}>Szolgáltatások</span>
-          <span style={{ ...linkStyle(false), color: 'var(--text-muted)' }}>Blog</span>
+          <span style={{ ...linkStyle('', false), color: 'var(--text-muted)' }}>Adományozás</span>
+          <span style={{ ...linkStyle('', false), color: 'var(--text-muted)' }}>Szolgáltatások</span>
+          <span style={{ ...linkStyle('', false), color: 'var(--text-muted)' }}>Blog</span>
         </nav>
       )}
 
