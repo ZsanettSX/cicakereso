@@ -11,3 +11,4 @@ public/uploads/*
 !public/uploads/.gitkeep
 next-env.d.ts
 .DS_Store
+tsconfig.tsbuildinfo
